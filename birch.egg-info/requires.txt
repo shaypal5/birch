@@ -1,0 +1,7 @@
+strct
+
+[test]
+pytest
+coverage
+pytest-cov
+strct
