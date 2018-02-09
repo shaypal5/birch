@@ -33,10 +33,10 @@
         },
         "strct": {
             "hashes": [
-                "sha256:68afc2307b92f96b6e02f8fbbf1a6f5e7359a00a8e04571fc61c37e18ef24445",
-                "sha256:b60cebf2a24859f9653de65eb2f5ea2822fa27a6b09abd9c13d14a6b0133b122"
+                "sha256:1b1503673c185652640157d42277c42315c186168ee61e8ce768f4823376f452",
+                "sha256:d4e8b875de3f91a79aecced85d3585624a7bdbdad76e37b74204a0ba209fd191"
             ],
-            "version": "==0.0.19"
+            "version": "==0.0.23"
         }
     },
     "develop": {
@@ -131,10 +131,10 @@
         },
         "strct": {
             "hashes": [
-                "sha256:68afc2307b92f96b6e02f8fbbf1a6f5e7359a00a8e04571fc61c37e18ef24445",
-                "sha256:b60cebf2a24859f9653de65eb2f5ea2822fa27a6b09abd9c13d14a6b0133b122"
+                "sha256:1b1503673c185652640157d42277c42315c186168ee61e8ce768f4823376f452",
+                "sha256:d4e8b875de3f91a79aecced85d3585624a7bdbdad76e37b74204a0ba209fd191"
             ],
-            "version": "==0.0.19"
+            "version": "==0.0.23"
         }
     }
 }

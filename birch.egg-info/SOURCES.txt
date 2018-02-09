@@ -11,4 +11,4 @@ birch.egg-info/dependency_links.txt
 birch.egg-info/requires.txt
 birch.egg-info/top_level.txt
 tests/__init__.py
-tests/test_common.py
+tests/test_core.py

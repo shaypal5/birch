@@ -1,7 +1,7 @@
-strct
+strct>=0.0.23
 
 [test]
 pytest
 coverage
 pytest-cov
-strct
+strct>=0.0.23

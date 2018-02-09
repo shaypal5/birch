@@ -1,6 +1,6 @@
 Metadata-Version: 1.2
 Name: birch
-Version: 0+unknown
+Version: 0+untagged.1.gd5eca7e.dirty
 Summary: Utilities for pandas.
 Home-page: https://github.com/shaypal5/birch
 Author: Shay Palachy

@@ -7,7 +7,7 @@ import setuptools
 import versioneer
 
 
-INSTALL_REQUIRES = ['strct']
+INSTALL_REQUIRES = ['strct>=0.0.23']
 TEST_REQUIRES = ['pytest', 'coverage', 'pytest-cov']
 
 with open('README.rst') as f:
