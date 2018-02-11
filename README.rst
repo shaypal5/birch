@@ -129,8 +129,9 @@ By default, ``birch`` will only try to read ``cfg.json`` files. To dictate a dif
 For example, ``Birch('zubat', supported_formats=['json', 'yaml'])`` will read both ``cfg.json`` and ``cfg.yaml`` files, while ``Birch('golbat', supported_formats='yaml')`` will ony read ``cfg.yaml`` (and ``cfg.yml``) files.
 
 Currently supported formats are:
- * ``JSON`` - Looks for ``cfg.json`` files.
- * ``YAML`` - Looks for ``cfg.yaml`` and ``cfg.yml`` files.
+
+* ``JSON`` - Looks for ``cfg.json`` files.
+* ``YAML`` - Looks for ``cfg.yaml`` and ``cfg.yml`` files.
 
 
 Contributing
