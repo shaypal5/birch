@@ -1,5 +1,5 @@
 birch |birch_icon|
-##########
+##################
 |PyPI-Status| |PyPI-Versions| |Build-Status| |Codecov| |LICENCE|
 
 Simple hierarchical configuration for Python packages.

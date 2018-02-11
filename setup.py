@@ -8,7 +8,14 @@ import versioneer
 
 
 INSTALL_REQUIRES = ['strct>=0.0.23']
-TEST_REQUIRES = ['pytest', 'coverage', 'pytest-cov', 'pyyaml']
+TEST_REQUIRES = [
+    # testing and coverate
+    'pytest', 'coverage', 'pytest-cov',
+    # unmandatory dependency of the package itself
+    'pyyaml',
+    # to be able to run `python setup.py checkdocs`
+    'collective.checkdocs', 'pygments',
+]
 
 with open('README.rst') as f:
     README = f.read()
