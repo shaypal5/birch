@@ -1,8 +1,0 @@
-strct>=0.0.23
-
-[test]
-pytest
-coverage
-pytest-cov
-pyyaml
-strct>=0.0.23

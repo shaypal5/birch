@@ -96,3 +96,5 @@ tags
 
 # vim swap files
 *.swp
+
+.pytest-cache/
