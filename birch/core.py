@@ -19,8 +19,11 @@ class Birch(collections.abc.Mapping):
 
     Parameters
     ----------
-    root_name : str
+    namespace : str
         Root name to be used for configuration folder and variable names.
+    directories : str or list of str, optional
+        A list of directory paths in which to look for configuration files. If
+        not given '~/.namespace' is the only path used.
     supported_formats : list of str, optional
         A list of configuration file formats to support; e.g. ['json', 'yml'].
         If not given, json is the only supported format.
@@ -45,29 +48,37 @@ class Birch(collections.abc.Mapping):
     except ImportError:  # pragma: no cover
         pass
 
-    def __init__(self, root_name, supported_formats=None):
+    def __init__(self, namespace, directories=None, supported_formats=None):
+        if directories is None:
+            cfg_dpath = os.path.expanduser('~/.{}'.format(namespace))
+            directories = [cfg_dpath]
+        if isinstance(directories, str):
+            directories = [directories]
         if supported_formats is None:
             supported_formats = ['json']
-        self.root_name = root_name
-        self.upper_root_name = root_name.upper()
-        self.root_len = len(root_name)
-        self.envar_pat = r'{}(_[A-Z0-9]+)+'.format(self.root_name.upper())
+        if isinstance(supported_formats, str):
+            supported_formats = [supported_formats]
+        self.namespace = namespace
+        self.upper_namespace = namespace.upper()
+        self.root_len = len(namespace)
+        self.envar_pat = r'{}(_[A-Z0-9]+)+'.format(self.namespace.upper())
+        self.directories = directories
         self.formats = supported_formats
         self.no_val = Birch._NoVal()
-        self.cfg_dpath = os.path.expanduser('~/.{}'.format(root_name))
         self.val_dict = self._val_dict()
 
     def _cfg_fpaths(self):
         paths = []
-        for fmt in self.formats:
-            try:
-                for ext in Birch._FMT_TO_EXT_MAP[fmt]:
-                    fname = Birch._CFG_FNAME_PAT.format(ext)
-                    fpath = os.path.join(self.cfg_dpath, fname)
-                    paths.append(fpath)
-            except KeyError:
-                raise UnsupporedFormatException("Unsupported format {}".format(
-                    fmt))
+        for cfg_dpath in self.directories:
+            for fmt in self.formats:
+                try:
+                    for ext in Birch._FMT_TO_EXT_MAP[fmt]:
+                        fname = Birch._CFG_FNAME_PAT.format(ext)
+                        fpath = os.path.join(cfg_dpath, fname)
+                        paths.append(fpath)
+                except KeyError:
+                    raise UnsupporedFormatException(
+                        "Unsupported format {}".format(fmt))
         return paths
 
     @staticmethod
@@ -102,6 +113,7 @@ class Birch(collections.abc.Mapping):
         for envar in env_vars:
             if re.match(pat, envar):
                 key = envar[self.root_len + 1:]
+                # val_dict[key] = env_vars[envar]
                 if '_' in key:
                     key_tuple = key.split('_')
                 else:
@@ -120,13 +132,16 @@ class Birch(collections.abc.Mapping):
     # implementing a collections.abc.Mapping abstract method
     def __getitem__(self, key):
         key = key.upper()
-        if self.upper_root_name in key:
+        if self.upper_namespace in key:
             key = key[self.root_len + 1:]
         if '_' in key:
             key_tuple = key.split('_')
         else:
             key_tuple = [key]
-        res = safe_nested_val(key_tuple, self.val_dict, self.no_val)
+        try:
+            res = self.val_dict[key]
+        except KeyError:
+            res = safe_nested_val(key_tuple, self.val_dict, self.no_val)
         if res == self.no_val:
             raise KeyError("No configuration value for {}.".format(key))
         return res

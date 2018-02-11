@@ -8,6 +8,8 @@ Simple hierarchical configuration for Python packages.
 
   from birch import Birch
   cfg = Birch('mypackage')
+  # read both the MYPACKAGE_SERVER_HOSTNAME environment variable
+  # and ~/.mypackage/cfg.json containing {'server': {'port': 55}}
   connect(cfg['SERVER_HOSTNAME'], cfg['server']['port'])
 
 .. contents::
@@ -26,6 +28,7 @@ Installation
 Features
 ========
 
+* Supported formats: JSON, YAML
 * Pure python.
 * Supports Python 3.4+.
 * Fully tested.
@@ -34,11 +37,91 @@ Features
 Use
 ===
 
-``birch`` is a simple way to read simple hierarchical configuration for your Python package or application from both environment variables and 
+Basic use
+---------
+
+``birch`` is a simple way to read simple hierarchical configuration for your Python package or application from both environment variables and configuration files. 
+
+``birch`` uses namespaces to manage configuration values. The access to each namespace is done via a ``Birch`` object initialized with that namespace. Though written with a specific use case in mind, where a single package uses a single namespace to manage its configuration, any number of namespaces can be used. For example:
 
 .. code-block:: python
 
-    from birch import Birch
+  from birch import Birch
+  zubat_cfg = Birch('zubat')
+  golbat_cfg = Birch('golbat')
+
+
+Each namespace encompasses all values set either environment variables starting with the ``<uppercase_namespace>_``, or defined ``cfg`` files (of a supported format) located in the ``~/.<namespace>`` directory.
+
+For example, the ``zubat`` namespace encompasses environment variables such as ``ZUBAT_HOSTNAME`` and ``ZUBAT_PORT``, and all mappings in the ``~/.zubat/cfg.json`` file (if it exists).
+
+Once defined in such a way, the ``Birch`` object can be used to access the values of mappings of both types (with our without the namespace suffix; casing is also ignored). For example:
+
+.. code-block:: python
+
+  >>> os.environ['ZUBAT_SERVER_HOST'] = 'www.zubat.com'
+  >>> os.environ['ZUBAT_SERVER_PORT'] = '87'
+  >>> from birch import Birch
+  >>> zubat_cfg = Birch('zubat')
+  >>>> zubat_cfg['ZUBAT_SERVER_HOST']
+  www.zubat.com
+  >>> zubat_cfg['SERVER_PORT']
+  87
+  >>> zubat_cfg['server_port']
+  87
+
+
+Hierarchical configuration
+--------------------------
+
+``birch`` supports a simple hierarchy between configuration mapping. The ``_`` character is used to signal a hierarchical mapping, so the ``ZUBAT_SERVER_PORT`` environment variable is equivalent to ``{'server': {'port': 55}}`` mapping given in a ``~/.zubat/cfg.json`` file, for example. It is also equivalent to the ``{'server_port': 55}`` mapping.
+
+As such, hierarchical mapping can be accessed either using ``_`` to indicate a hierarchical path, or using dict-like item access:
+
+.. code-block:: python
+
+  >>> os.environ['ZUBAT_SERVER_HOST'] = 'www.zubat.com'
+  >>> from birch import Birch
+  >>> zubat_cfg = Birch('zubat')
+  >>>> zubat_cfg['SERVER_HOST']
+  www.zubat.com
+  >>>> zubat_cfg['SERVER']['HOST']
+  www.zubat.com
+
+
+This is not true for non-hierarchical mappings; so, ``{'server_port': 55}`` can only be accessed with ``zubat_cfg['SERVER_PORT']``, and not using ``zubat_cfg['SERVER']['PORT']``.
+
+Also, notice that casing is not ignored for levels after the first, so a mapping given by the ``ZUBAT_SERVER_PORT`` environment variable cannot be read with  ``zubat_cfg['server']['port']``, but only with
+``zubat_cfg['SERVER']['PORT']`` or ``zubat_cfg['server']['PORT']``.
+
+
+Resolution order
+----------------
+
+A namespace is always loaded with matching environment variables **after** all configuration files has been loaded, and corresponding mappings will thus override their file-originating counterparts; e.g. the ``ZUBAT_SERVER_PORT`` environment variable will overwrite the value of the mapping ``{'server': {'port': 55}}`` given in a ``~/.zubat/cfg.json`` file. 
+
+The loading order of different files, while deterministic, is undefined and not part of the API. Thus, ``cfg`` files with different file extensions can not be relied upon to provide private-vs-shared configuration functionality.
+
+
+Configuration
+-------------
+
+Configuration directories
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+By default ``birch`` looks for files only in the ``~/.<namespace>`` directory. You can set a different set of directories to read by populating the ``directories`` constructor parameter with a different directory path, or a list of paths.
+
+
+File formats
+~~~~~~~~~~~~
+
+By default, ``birch`` will only try to read ``cfg.json`` files. To dictate a different set of supported format, populate the ``supported_formats`` constructor parameter with the desired formats. 
+
+For example, ``Birch('zubat', supported_formats=['json', 'yaml'])`` will read both ``cfg.json`` and ``cfg.yaml`` files, while ``Birch('golbat', supported_formats='yaml')`` will ony read ``cfg.yaml`` (and ``cfg.yml``) files.
+
+Currently supported formats are:
+ * ``JSON`` - Looks for ``cfg.json`` files.
+ * ``YAML`` - Looks for ``cfg.yaml`` and ``cfg.yml`` files.
 
 
 Contributing
