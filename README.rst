@@ -4,10 +4,10 @@ birch
 
 |birch_icon| Simple hierarchical configuration for Python packages.
 
-.. |birch_icon| image:: https://raw.githubusercontent.com/shaypal5/birch/master/birch.png 
+.. |birch_icon| image:: https://github.com/shaypal5/birch/blob/b10a19a28cb1fc41d0c596df5bcd8390e7c22ee7/birch.png
    :height: 87
    :width: 40 px
-   :scale: 50 %
+   :scale: 100 %
 
 .. code-block:: python
 
