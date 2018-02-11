@@ -97,4 +97,7 @@ tags
 # vim swap files
 *.swp
 
+# pytest
 .pytest-cache/
+.pytest-cache/*
+.pytest*
