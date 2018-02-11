@@ -105,8 +105,8 @@ A namespace is always loaded with matching environment variables **after** all c
 The loading order of different files, while deterministic, is undefined and not part of the API. Thus, ``cfg`` files with different file extensions can not be relied upon to provide private-vs-shared configuration functionality.
 
 
-Configuration
--------------
+Configuring birch
+-----------------
 
 Configuration directories
 ~~~~~~~~~~~~~~~~~~~~~~~~~
