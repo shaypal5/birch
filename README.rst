@@ -28,7 +28,7 @@ Installation
 Features
 ========
 
-* Supported formats: JSON, YAML
+* Supported formats: JSON, YAML.
 * Pure python.
 * Supports Python 3.4+.
 * Fully tested.
@@ -40,7 +40,7 @@ Use
 Basic use
 ---------
 
-``birch`` is a simple way to read simple hierarchical configuration for your Python package or application from both environment variables and configuration files. 
+``birch`` provides a simple way to read simple hierarchical configuration for your Python package or application from both environment variables and configuration files. 
 
 ``birch`` uses namespaces to manage configuration values. The access to each namespace is done via a ``Birch`` object initialized with that namespace. Though written with a specific use case in mind, where a single package uses a single namespace to manage its configuration, any number of namespaces can be used. For example:
 
@@ -51,11 +51,11 @@ Basic use
   golbat_cfg = Birch('golbat')
 
 
-Each namespace encompasses all values set either environment variables starting with the ``<uppercase_namespace>_``, or defined ``cfg`` files (of a supported format) located in the ``~/.<namespace>`` directory.
+Each namespace encompasses all values set by either environment variables starting with ``<uppercase_namespace>_``, or defined within ``cfg`` files (of a supported format) located in the ``~/.<namespace>`` directory.
 
 For example, the ``zubat`` namespace encompasses environment variables such as ``ZUBAT_HOSTNAME`` and ``ZUBAT_PORT``, and all mappings in the ``~/.zubat/cfg.json`` file (if it exists).
 
-Once defined in such a way, the ``Birch`` object can be used to access the values of mappings of both types (with our without the namespace suffix; casing is also ignored). For example:
+Once defined in such a way, the ``Birch`` object can be used to access the values of mappings of both types (with or without the namespace suffix; casing is also ignored). For example:
 
 .. code-block:: python
 
@@ -64,17 +64,17 @@ Once defined in such a way, the ``Birch`` object can be used to access the value
   >>> from birch import Birch
   >>> zubat_cfg = Birch('zubat')
   >>>> zubat_cfg['ZUBAT_SERVER_HOST']
-  www.zubat.com
+  'www.zubat.com'
   >>> zubat_cfg['SERVER_PORT']
-  87
+  '87'
   >>> zubat_cfg['server_port']
-  87
+  '87'
 
 
 Hierarchical configuration
 --------------------------
 
-``birch`` supports a simple hierarchy between configuration mapping. The ``_`` character is used to signal a hierarchical mapping, so the ``ZUBAT_SERVER_PORT`` environment variable is equivalent to ``{'server': {'port': 55}}`` mapping given in a ``~/.zubat/cfg.json`` file, for example. It is also equivalent to the ``{'server_port': 55}`` mapping.
+``birch`` supports a simple hierarchy between configuration mappings. The ``_`` character is used to signal a hierarchical mapping, so the ``ZUBAT_SERVER_PORT`` environment variable is equivalent to ``{'server': {'port': 55}}`` mapping given in a ``~/.zubat/cfg.json`` file, for example. It is also **partially** equivalent to the ``{'server_port': 55}`` mapping.
 
 As such, hierarchical mapping can be accessed either using ``_`` to indicate a hierarchical path, or using dict-like item access:
 
@@ -84,15 +84,17 @@ As such, hierarchical mapping can be accessed either using ``_`` to indicate a h
   >>> from birch import Birch
   >>> zubat_cfg = Birch('zubat')
   >>>> zubat_cfg['SERVER_HOST']
-  www.zubat.com
+  'www.zubat.com'
   >>>> zubat_cfg['SERVER']['HOST']
-  www.zubat.com
+  'www.zubat.com'
 
 
-This is not true for non-hierarchical mappings; so, ``{'server_port': 55}`` can only be accessed with ``zubat_cfg['SERVER_PORT']``, and not using ``zubat_cfg['SERVER']['PORT']``.
+**This is not true for non-hierarchical mappings**; so, ``{'server_port': 55}`` can only be accessed with ``zubat_cfg['SERVER_PORT']``, and not using ``zubat_cfg['SERVER']['PORT']``.
 
-Also, notice that casing is not ignored for levels after the first, so a mapping given by the ``ZUBAT_SERVER_PORT`` environment variable cannot be read with  ``zubat_cfg['server']['port']``, but only with
+Also, **note that casing is not ignored for levels after the first**, so a mapping given by the ``ZUBAT_SERVER_PORT`` environment variable cannot be read with  ``zubat_cfg['server']['port']``, but only with
 ``zubat_cfg['SERVER']['PORT']`` or ``zubat_cfg['server']['PORT']``.
+
+As such, a good practice is to only use upper-case strings for mapping access, anf not use the ``_`` character within a name in configuration files.
 
 
 Resolution order
@@ -145,6 +147,13 @@ Install in development mode, including test dependencies:
 
   cd birch
   pip install -e '.[test]'
+
+Or, if you are using ``pipenv``, use the following command to create a ``pipenv`` Python virtual environment with development dependencies:
+
+.. code-block:: bash
+
+  cd birch
+  pipenv install --dev
 
 
 Running the tests
