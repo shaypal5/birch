@@ -8,7 +8,7 @@ import versioneer
 
 
 INSTALL_REQUIRES = ['strct>=0.0.23']
-TEST_REQUIRES = ['pytest', 'coverage', 'pytest-cov']
+TEST_REQUIRES = ['pytest', 'coverage', 'pytest-cov', 'pyyaml']
 
 with open('README.rst') as f:
     README = f.read()

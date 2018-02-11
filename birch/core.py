@@ -11,6 +11,8 @@ from strct.dicts import (
     key_tuple_value_nested_generator,
 )
 
+from .exceptions import UnsupporedFormatException
+
 
 class Birch(collections.abc.Mapping):
     """Defines a configuration access object.
@@ -31,6 +33,17 @@ class Birch(collections.abc.Mapping):
     _EXT_TO_DESERIALZE_MAP = {
         '.json': json.load,
     }
+    _FMT_TO_EXT_MAP = {
+        'json': ['json'],
+        'yaml': ['yml', 'yaml'],
+    }
+
+    try:
+        import yaml
+        _EXT_TO_DESERIALZE_MAP['.yml'] = yaml.load
+        _EXT_TO_DESERIALZE_MAP['.yaml'] = yaml.load
+    except ImportError:  # pragma: no cover
+        pass
 
     def __init__(self, root_name, supported_formats=None):
         if supported_formats is None:
@@ -46,10 +59,15 @@ class Birch(collections.abc.Mapping):
 
     def _cfg_fpaths(self):
         paths = []
-        for ext in self.formats:
-            fname = Birch._CFG_FNAME_PAT.format(ext)
-            fpath = os.path.join(self.cfg_dpath, fname)
-            paths.append(fpath)
+        for fmt in self.formats:
+            try:
+                for ext in Birch._FMT_TO_EXT_MAP[fmt]:
+                    fname = Birch._CFG_FNAME_PAT.format(ext)
+                    fpath = os.path.join(self.cfg_dpath, fname)
+                    paths.append(fpath)
+            except KeyError:
+                raise UnsupporedFormatException("Unsupported format {}".format(
+                    fmt))
         return paths
 
     @staticmethod
@@ -64,10 +82,18 @@ class Birch(collections.abc.Mapping):
 
     def _read_cfg_file(self, fpath):
         _, ext = os.path.splitext(fpath)
-        deserial = Birch._EXT_TO_DESERIALZE_MAP[ext]
-        with open(fpath, 'r') as cfile:
-            val_dict = deserial(cfile)
-        return Birch._upper_helper(val_dict)
+        try:
+            deserial = Birch._EXT_TO_DESERIALZE_MAP[ext]
+        except KeyError:  # pragma: no cover
+            return {}
+        try:
+            with open(fpath, 'r') as cfile:
+                val_dict = deserial(cfile)
+            print(fpath)
+            print(val_dict)
+            return Birch._upper_helper(val_dict)
+        except FileNotFoundError:
+            return {}
 
     def _read_env_vars(self):
         pat = re.compile(self.envar_pat)
@@ -86,6 +112,7 @@ class Birch(collections.abc.Mapping):
     def _val_dict(self):
         val_dict = {}
         for path in self._cfg_fpaths():
+            print(path)
             val_dict.update(**self._read_cfg_file(path))
         val_dict.update(**self._read_env_vars())
         return val_dict

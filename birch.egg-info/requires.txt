@@ -4,4 +4,5 @@ strct>=0.0.23
 pytest
 coverage
 pytest-cov
+pyyaml
 strct>=0.0.23

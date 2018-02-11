@@ -2,9 +2,12 @@
 
 import os
 import json
+import shutil
 
 import pytest
+import yaml
 from birch import Birch
+from birch.exceptions import UnsupporedFormatException
 
 
 ROOT = 'toasttest'
@@ -23,6 +26,14 @@ VAL_DICT = {
     },
 }
 
+ROOT2 = 'monkeyshoes'
+VAL_DICT2 = {
+    'lone': 'puf',
+    'write': {
+        'a': 'koko',
+    }
+}
+
 
 @pytest.fixture(scope="session", autouse=True)
 def do_something(request):
@@ -38,12 +49,23 @@ def do_something(request):
     os.environ[ROOT.upper() + '_MIKE'] = str(88)
     os.environ[ROOT.upper() + '_MAN_HEIGHT'] = '175'
     os.environ[ROOT.upper() + '_MAN_WEIGHT'] = '73'
+
+    # - prepare cfg file
+    cfg_dpath2 = os.path.expanduser('~/.{}'.format(ROOT2))
+    os.makedirs(cfg_dpath2, exist_ok=True)
+    fpath2 = os.path.join(cfg_dpath2, 'cfg.yml')
+    with open(fpath2, 'w+') as cfile:
+        yaml.dump(VAL_DICT2, cfile)
+    # - prepare cfg env vars
+    os.environ[ROOT2.upper() + '_MOLE'] = 'geers'
+    os.environ[ROOT2.upper() + '_SHAKE_BAKE'] = 'bob'
+
     yield
     # Will be executed after the last test
-    os.remove(fpath)
+    shutil.rmtree(cfg_dpath)
 
 
-def test_base():
+def test_json():
     cfg = Birch(ROOT)
     print(cfg.val_dict)
     assert cfg['basekey'] == 'base_val'
@@ -64,7 +86,22 @@ def test_base():
     for name, value in cfg:
         assert isinstance(name, str)
 
-    cfg = Birch(ROOT, supported_formats=['json'])
+
+def test_yaml():
+    cfg = Birch(ROOT2, supported_formats=['yaml'])
     print(cfg.val_dict)
-    assert cfg['basekey'] == 'base_val'
-    assert cfg['BASEKEY'] == 'base_val'
+    assert cfg['lone'] == 'puf'
+    assert cfg['WRITE']['A'] == 'koko'
+    assert cfg['WRITE_A'] == 'koko'
+    assert cfg['MOLE'] == 'geers'
+    assert cfg['SHAKE']['BAKE'] == 'bob'
+    with pytest.raises(KeyError):
+        assert cfg['JON'] == 'Hello'
+    assert len(cfg) == 4
+    for name, value in cfg:
+        assert isinstance(name, str)
+
+
+def test_unsupported_format():
+    with pytest.raises(UnsupporedFormatException):
+        Birch(ROOT2, supported_formats=['yaml', 'lie'])

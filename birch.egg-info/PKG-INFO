@@ -1,6 +1,6 @@
 Metadata-Version: 1.2
 Name: birch
-Version: 0+untagged.1.gd5eca7e.dirty
+Version: 0+untagged.2.g13d93c2.dirty
 Summary: Utilities for pandas.
 Home-page: https://github.com/shaypal5/birch
 Author: Shay Palachy
@@ -16,6 +16,8 @@ Description: birch
         .. code-block:: python
         
           from birch import Birch
+          cfg = Birch('mypackage')
+          connect(cfg['SERVER_HOSTNAME'], cfg['server']['port'])
         
         .. contents::
         
@@ -40,6 +42,8 @@ Description: birch
         
         Use
         ===
+        
+        ``birch`` is a simple way to read simple hierarchical configuration for your Python package or application from both environment variables and 
         
         .. code-block:: python
         

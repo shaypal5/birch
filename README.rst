@@ -7,6 +7,8 @@ Simple hierarchical configuration for Python packages.
 .. code-block:: python
 
   from birch import Birch
+  cfg = Birch('mypackage')
+  connect(cfg['SERVER_HOSTNAME'], cfg['server']['port'])
 
 .. contents::
 
@@ -31,6 +33,8 @@ Features
 
 Use
 ===
+
+``birch`` is a simple way to read simple hierarchical configuration for your Python package or application from both environment variables and 
 
 .. code-block:: python
 
