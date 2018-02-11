@@ -166,6 +166,13 @@ To run the tests use:
   cd birch
   pytest
 
+Or, if you are using ``pipenv``:
+
+.. code-block:: bash
+
+  cd birch
+  pipenv run pytest
+
 
 Adding documentation
 --------------------
@@ -179,7 +186,7 @@ The project is documented using the `numpy docstring conventions`_, which were c
 Credits
 =======
 
-Created by Shay Palachy (shay.palachy@gmail.com).
+Created by `Shay Palachy <http://www.shaypalachy.com/>`_ (shay.palachy@gmail.com).
 
 
 .. |PyPI-Status| image:: https://img.shields.io/pypi/v/birch.svg
