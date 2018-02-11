@@ -5,7 +5,9 @@ birch
 |birch_icon| Simple hierarchical configuration for Python packages.
 
 .. |birch_icon| image:: https://raw.githubusercontent.com/shaypal5/birch/master/birch.png 
-  :scale: 50 %
+   :height: 87
+   :width: 40 px
+   :scale: 50 %
 
 .. code-block:: python
 
