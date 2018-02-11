@@ -1,10 +1,10 @@
- birch
+birch
 ##########
 |PyPI-Status| |PyPI-Versions| |Build-Status| |Codecov| |LICENCE|
 
-.. image:: https://raw.githubusercontent.com/shaypal5/birch/master/birch.png
+|birch_icon| Simple hierarchical configuration for Python packages.
 
-Simple hierarchical configuration for Python packages.
+.. |birch_icon| image:: https://raw.githubusercontent.com/shaypal5/birch/master/birch.png
 
 .. code-block:: python
 
