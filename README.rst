@@ -7,7 +7,7 @@ birch
 .. |birch_icon| image:: https://github.com/shaypal5/birch/blob/b10a19a28cb1fc41d0c596df5bcd8390e7c22ee7/birch.png
    :height: 87
    :width: 40 px
-   :scale: 100 %
+   :scale: 50 %
 
 .. code-block:: python
 
