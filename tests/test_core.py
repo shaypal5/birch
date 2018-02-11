@@ -63,6 +63,7 @@ def do_something(request):
     yield
     # Will be executed after the last test
     shutil.rmtree(cfg_dpath)
+    shutil.rmtree(cfg_dpath2)
 
 
 def test_json():
