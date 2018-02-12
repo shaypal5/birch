@@ -100,8 +100,6 @@ class Birch(collections.abc.Mapping):
         try:
             with open(fpath, 'r') as cfile:
                 val_dict = deserial(cfile)
-            print(fpath)
-            print(val_dict)
             return Birch._upper_helper(val_dict)
         except FileNotFoundError:
             return {}
@@ -124,7 +122,6 @@ class Birch(collections.abc.Mapping):
     def _val_dict(self):
         val_dict = {}
         for path in self._cfg_fpaths():
-            print(path)
             val_dict.update(**self._read_cfg_file(path))
         val_dict.update(**self._read_env_vars())
         return val_dict
