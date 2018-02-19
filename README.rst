@@ -173,12 +173,7 @@ To run the tests use:
 
   cd birch
   pytest
-
-Or, if you are using ``pipenv``:
-
-.. code-block:: bash
-
-  cd birch
+  # or, with pipenv:
   pipenv run pytest
 
 

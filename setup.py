@@ -9,9 +9,9 @@ import versioneer
 
 INSTALL_REQUIRES = ['strct>=0.0.23']
 TEST_REQUIRES = [
-    # testing and coverate
+    # testing and coverage
     'pytest', 'coverage', 'pytest-cov',
-    # unmandatory dependency of the package itself
+    # unmandatory dependencies of the package itself
     'pyyaml',
     # to be able to run `python setup.py checkdocs`
     'collective.checkdocs', 'pygments',

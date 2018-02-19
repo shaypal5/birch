@@ -58,6 +58,7 @@ class Birch(collections.abc.Mapping):
             supported_formats = ['json']
         if isinstance(supported_formats, str):
             supported_formats = [supported_formats]
+        supported_formats = [fmt.lower() for fmt in supported_formats]
         self.namespace = namespace
         self.upper_namespace = namespace.upper()
         self.root_len = len(namespace)
