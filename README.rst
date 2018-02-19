@@ -156,13 +156,6 @@ Install in development mode, including test dependencies:
   cd birch
   pip install -e '.[test]'
 
-Or, if you are using ``pipenv``, use the following command to create a ``pipenv`` Python virtual environment with development dependencies:
-
-.. code-block:: bash
-
-  cd birch
-  pipenv install --dev
-
 
 Running the tests
 -----------------
@@ -173,8 +166,6 @@ To run the tests use:
 
   cd birch
   pytest
-  # or, with pipenv:
-  pipenv run pytest
 
 
 Adding documentation
@@ -185,7 +176,7 @@ The project is documented using the `numpy docstring conventions`_, which were c
 .. _`numpy docstring conventions`: https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt
 .. _`these conventions`: https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt
 
-Additionally, if you update this ``README.rst`` file,  use ``python setup.py checkdocs`` (or ``pipenv run`` the same command) to validate it compiles.
+Additionally, if you update this ``README.rst`` file,  use ``python setup.py checkdocs`` to validate it compiles.
 
 
 Credits
