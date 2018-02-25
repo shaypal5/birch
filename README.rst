@@ -17,7 +17,7 @@ Simple hierarchical configuration for Python packages.
   cfg = Birch('mypackage')
   # read both the MYPACKAGE_SERVER_HOSTNAME environment variable
   # and ~/.mypackage/cfg.json containing {'server': {'port': 55}}
-  connect(cfg['SERVER_HOSTNAME'], cfg['server']['port'])
+  connect(cfg['SERVER__HOSTNAME'], cfg['server']['port'])
 
 .. contents::
 
@@ -58,9 +58,9 @@ Basic use
   golbat_cfg = Birch('golbat')
 
 
-Each namespace encompasses all values set by either environment variables starting with ``<uppercase_namespace>_``, or defined within ``cfg`` files (of a supported format) located in the ``~/.<namespace>`` directory.
+Each namespace encompasses all values set by either environment variables starting with ``<uppercase_namespace>_`` or ``<uppercase_namespace>__``, or defined within ``cfg`` files (of a supported format) located in the ``~/.<namespace>`` directory.
 
-For example, the ``zubat`` namespace encompasses environment variables such as ``ZUBAT_HOSTNAME`` and ``ZUBAT_PORT``, and all mappings in the ``~/.zubat/cfg.json`` file (if it exists).
+For example, the ``zubat`` namespace encompasses environment variables such as ``ZUBAT_HOSTNAME`` and ``ZUBAT__PORT``, and all mappings in the ``~/.zubat/cfg.json`` file (if it exists).
 
 Once defined in such a way, the ``Birch`` object can be used to access the values of mappings of both types (with or without the namespace suffix; casing is also ignored). For example:
 
@@ -81,33 +81,33 @@ Once defined in such a way, the ``Birch`` object can be used to access the value
 Hierarchical configuration
 --------------------------
 
-``birch`` supports a simple hierarchy between configuration mappings. The ``_`` character is used to signal a hierarchical mapping, so the ``ZUBAT_SERVER_PORT`` environment variable is equivalent to ``{'server': {'port': 55}}`` mapping given in a ``~/.zubat/cfg.json`` file, for example. It is also **partially** equivalent to the ``{'server_port': 55}`` mapping.
+``birch`` supports a simple hierarchy between configuration mappings. ``__`` (two underscore characters) is used to signal a hierarchical mapping, so the ``ZUBAT__SERVER__PORT`` environment variable is equivalent to ``{'server': {'port': 55}}`` mapping given in a ``~/.zubat/cfg.json`` file, for example.
 
-As such, hierarchical mapping can be accessed either using ``_`` to indicate a hierarchical path, or using dict-like item access:
+As such, hierarchical mapping can be accessed either using ``__`` to indicate a hierarchical path, or using dict-like item access:
 
 .. code-block:: python
 
-  >>> os.environ['ZUBAT_SERVER_HOST'] = 'www.zubat.com'
+  >>> os.environ['ZUBAT__SERVER__HOST'] = 'www.zubat.com'
   >>> from birch import Birch
   >>> zubat_cfg = Birch('zubat')
-  >>>> zubat_cfg['SERVER_HOST']
+  >>>> zubat_cfg['SERVER__HOST']
   'www.zubat.com'
   >>>> zubat_cfg['SERVER']['HOST']
   'www.zubat.com'
 
 
-**This is not true for non-hierarchical mappings**; so, ``{'server_port': 55}`` can only be accessed with ``zubat_cfg['SERVER_PORT']``, and not using ``zubat_cfg['SERVER']['PORT']``.
+**This is not true for non-hierarchical mappings**; so, ``{'server__port': 55}`` can only be accessed with ``zubat_cfg['SERVER__PORT']``, and not using ``zubat_cfg['SERVER']['PORT']``.
 
-Also, **note that casing is not ignored for levels after the first**, so a mapping given by the ``ZUBAT_SERVER_PORT`` environment variable cannot be read with  ``zubat_cfg['server']['port']``, but only with
+Also, **note that casing is not ignored for levels after the first**, so a mapping given by the ``ZUBAT__SERVER__PORT`` environment variable cannot be read with  ``zubat_cfg['server']['port']``, but only with
 ``zubat_cfg['SERVER']['PORT']`` or ``zubat_cfg['server']['PORT']``.
 
-As such, a good practice is to only use upper-case strings for mapping access, anf not use the ``_`` character within a name in configuration files.
+As such, a good practice is to only use upper-case strings for mapping access.
 
 
 Resolution order
 ----------------
 
-A namespace is always loaded with matching environment variables **after** all configuration files has been loaded, and corresponding mappings will thus override their file-originating counterparts; e.g. the ``ZUBAT_SERVER_PORT`` environment variable will overwrite the value of the mapping ``{'server': {'port': 55}}`` given in a ``~/.zubat/cfg.json`` file. 
+A namespace is always loaded with matching environment variables **after** all configuration files has been loaded, and corresponding mappings will thus override their file-originating counterparts; e.g. the ``ZUBAT__SERVER__PORT`` environment variable will overwrite the value of the mapping ``{'server': {'port': 55}}`` given in a ``~/.zubat/cfg.json`` file. 
 
 The loading order of different files, while deterministic, is undefined and not part of the API. Thus, ``cfg`` files with different file extensions can not be relied upon to provide private-vs-shared configuration functionality.
 
