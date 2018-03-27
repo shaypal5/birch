@@ -71,7 +71,7 @@ class Birch(collections.abc.Mapping):
         self.directories = directories
         self.formats = supported_formats
         self._no_val = Birch._NoVal()
-        self._val_dict = self._val_dict()
+        self._val_dict = self._build_val_dict()
 
     def _cfg_fpaths(self):
         paths = []
@@ -128,7 +128,7 @@ class Birch(collections.abc.Mapping):
                 put_nested_val(val_dict, key_tuple, env_vars[envar])
         return val_dict
 
-    def _val_dict(self):
+    def _build_val_dict(self):
         val_dict = {}
         for path in self._cfg_fpaths():
             val_dict.update(**self._read_cfg_file(path))
