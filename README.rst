@@ -98,11 +98,6 @@ As such, hierarchical mapping can be accessed either using ``__`` to indicate a 
 
 **This is not true for non-hierarchical mappings**; so, ``{'server__port': 55}`` can only be accessed with ``zubat_cfg['SERVER__PORT']``, and not using ``zubat_cfg['SERVER']['PORT']``.
 
-Also, **note that casing is not ignored for levels after the first**, so a mapping given by the ``ZUBAT__SERVER__PORT`` environment variable cannot be read with  ``zubat_cfg['server']['port']``, but only with
-``zubat_cfg['SERVER']['PORT']`` or ``zubat_cfg['server']['PORT']``.
-
-As such, a good practice is to only use upper-case strings for mapping access.
-
 
 Resolution order
 ----------------

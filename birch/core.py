@@ -16,6 +16,29 @@ from .exceptions import UnsupporedFormatException
 SEP = '__'
 
 
+class CaseIgnoreDict(dict):
+    __doc__ = "A string-key only, case-ignoring dict. " + dict.__doc__
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def __getitem__(self, key):
+        try:
+            ukey = key.upper()
+            lkey = key.lower()
+        except AttributeError:
+            raise ValueError("CaseIgnoreDict only supports string keys")
+        try:
+            return super().__getitem__(ukey)
+        except KeyError:
+            pass
+        try:
+            return super().__getitem__(lkey)
+        except KeyError:
+            pass
+        return super().__getitem__(key)
+
+
 class Birch(collections.abc.Mapping):
     """Defines a configuration access object.
 
@@ -89,7 +112,7 @@ class Birch(collections.abc.Mapping):
 
     @staticmethod
     def _upper_helper(dict_obj):
-        new_dict = {}
+        new_dict = CaseIgnoreDict()
         for key, value in dict_obj.items():
             if isinstance(value, dict):
                 new_dict[key.upper()] = Birch._upper_helper(value)
@@ -129,7 +152,7 @@ class Birch(collections.abc.Mapping):
         return val_dict
 
     def _build_val_dict(self):
-        val_dict = {}
+        val_dict = CaseIgnoreDict()
         for path in self._cfg_fpaths():
             val_dict.update(**self._read_cfg_file(path))
         val_dict.update(**self._read_env_vars())
@@ -137,7 +160,10 @@ class Birch(collections.abc.Mapping):
 
     # implementing a collections.abc.Mapping abstract method
     def __getitem__(self, key):
-        key = key.upper()
+        try:
+            key = key.upper()
+        except AttributeError:
+            raise ValueError("Birch does not support non-string keys!")
         if self._root2 in key:
             key = key[self._root_len2:]
         elif self._root1 in key:

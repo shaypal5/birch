@@ -95,12 +95,16 @@ def test_json():
     assert res['PORT'] == 1293
     assert cfg['SERVER__PORT'] == 1293
     assert cfg['SERVER']['PORT'] == 1293
+    with pytest.raises(ValueError):
+        cfg['SERVER'][4]
     assert cfg['{}_SERVER__PORT'.format(NSPACE)] == 1293
     assert cfg['{}__SERVER__PORT'.format(NSPACE)] == 1293
     assert cfg['nega'] == 'Uvavo'
     assert cfg['mike'] == '88'
     assert cfg['MAN']['HEIGHT'] == '175'
     assert cfg['MAN__WEIGHT'] == '73'
+    with pytest.raises(ValueError):
+        cfg[54]
 
     assert cfg['MOCK__LVL'] == 'A'
     assert cfg['MOCK__LVL2'] == 'B'
