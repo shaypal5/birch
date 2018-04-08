@@ -7,7 +7,7 @@ import setuptools
 import versioneer
 
 
-INSTALL_REQUIRES = ['strct>=0.0.23']
+INSTALL_REQUIRES = ['strct>=0.0.26']
 TEST_REQUIRES = [
     # testing and coverage
     'pytest', 'coverage', 'pytest-cov',
