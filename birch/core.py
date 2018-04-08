@@ -9,34 +9,12 @@ from strct.dicts import (
     safe_nested_val,
     put_nested_val,
     key_tuple_value_nested_generator,
+    CaseInsensitiveDict,
 )
 
 from .exceptions import UnsupporedFormatException
 
 SEP = '__'
-
-
-class CaseIgnoreDict(dict):
-    __doc__ = "A string-key only, case-ignoring dict. " + dict.__doc__
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def __getitem__(self, key):
-        try:
-            ukey = key.upper()
-            lkey = key.lower()
-        except AttributeError:
-            raise ValueError("CaseIgnoreDict only supports string keys")
-        try:
-            return super().__getitem__(ukey)
-        except KeyError:
-            pass
-        try:
-            return super().__getitem__(lkey)
-        except KeyError:
-            pass
-        return super().__getitem__(key)
 
 
 class Birch(collections.abc.Mapping):
@@ -111,14 +89,17 @@ class Birch(collections.abc.Mapping):
         return paths
 
     @staticmethod
-    def _upper_helper(dict_obj):
-        new_dict = CaseIgnoreDict()
+    def _hierarchical_dict_from_dict(dict_obj):
+        val_dict = {}
         for key, value in dict_obj.items():
-            if isinstance(value, dict):
-                new_dict[key.upper()] = Birch._upper_helper(value)
+            key = key.lower()
+            if SEP in key:
+                key_tuple = key.split(SEP)
             else:
-                new_dict[key.upper()] = value
-        return new_dict
+                key_tuple = [key]
+            val_dict[key] = value
+            put_nested_val(val_dict, key_tuple, value)
+        return CaseInsensitiveDict.from_dict(val_dict)
 
     def _read_cfg_file(self, fpath):
         _, ext = os.path.splitext(fpath)
@@ -129,7 +110,8 @@ class Birch(collections.abc.Mapping):
         try:
             with open(fpath, 'r') as cfile:
                 val_dict = deserial(cfile)
-            return Birch._upper_helper(val_dict)
+            val_dict = Birch._hierarchical_dict_from_dict(val_dict)
+            return val_dict
         except FileNotFoundError:
             return {}
 
@@ -144,18 +126,16 @@ class Birch(collections.abc.Mapping):
                 # elif self._root1 in envar:
                 else:
                     key = envar[self._root_len1:]
-                if SEP in key:
-                    key_tuple = key.split(SEP)
-                else:
-                    key_tuple = [key]
-                put_nested_val(val_dict, key_tuple, env_vars[envar])
+                val_dict[key] = env_vars[envar]
+        val_dict = Birch._hierarchical_dict_from_dict(val_dict)
         return val_dict
 
     def _build_val_dict(self):
-        val_dict = CaseIgnoreDict()
+        val_dict = CaseInsensitiveDict()
         for path in self._cfg_fpaths():
             val_dict.update(**self._read_cfg_file(path))
         val_dict.update(**self._read_env_vars())
+        val_dict = Birch._hierarchical_dict_from_dict(val_dict)
         return val_dict
 
     # implementing a collections.abc.Mapping abstract method

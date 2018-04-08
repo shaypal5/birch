@@ -93,13 +93,19 @@ def test_json():
     assert isinstance(res, dict)
     assert len(res) == 2
     assert res['PORT'] == 1293
+    assert res['port'] == 1293
     assert cfg['SERVER__PORT'] == 1293
+    assert cfg['server__port'] == 1293
     assert cfg['SERVER']['PORT'] == 1293
-    with pytest.raises(ValueError):
+    assert cfg['server']['PORT'] == 1293
+    assert cfg['SERVER']['port'] == 1293
+    assert cfg['server']['port'] == 1293
+    with pytest.raises(KeyError):
         cfg['SERVER'][4]
     assert cfg['{}_SERVER__PORT'.format(NSPACE)] == 1293
     assert cfg['{}__SERVER__PORT'.format(NSPACE)] == 1293
     assert cfg['nega'] == 'Uvavo'
+    assert cfg['NEGA'] == 'Uvavo'
     assert cfg['mike'] == '88'
     assert cfg['MAN']['HEIGHT'] == '175'
     assert cfg['MAN__WEIGHT'] == '73'
@@ -107,7 +113,13 @@ def test_json():
         cfg[54]
 
     assert cfg['MOCK__LVL'] == 'A'
+    assert cfg['mock__lvl'] == 'A'
+    assert cfg['MOCK']['LVL'] == 'A'
+    assert cfg['mock']['LVL'] == 'A'
+    assert cfg['MOCK']['lvl'] == 'A'
+    assert cfg['mock']['lvl'] == 'A'
     assert cfg['MOCK__LVL2'] == 'B'
+    assert cfg['mock__lvl2'] == 'B'
     assert cfg['NOT_LVL2'] == 'C'
     assert cfg.get('NOT_LVL2') == 'C'
     assert cfg.get('NOT_LVL2', '32') == 'C'
@@ -115,7 +127,7 @@ def test_json():
 
     with pytest.raises(KeyError):
         assert cfg['JON'] == 'Hello'
-    assert len(cfg) == 13
+    assert len(cfg) == 17
     for name, value in cfg:
         assert isinstance(name, str)
 
@@ -128,7 +140,11 @@ def test_yaml():
     )
     print(cfg._val_dict)
     assert cfg['lone'] == 'puf'
+    assert cfg['LONE'] == 'puf'
     assert cfg['WRITE']['A'] == 'koko'
+    assert cfg['write']['A'] == 'koko'
+    assert cfg['WRITE']['a'] == 'koko'
+    assert cfg['write']['a'] == 'koko'
     assert cfg['WRITE__A'] == 'koko'
     assert cfg['MOLE'] == 'geers'
     assert cfg['SHAKE']['BAKE'] == 'bob'
@@ -138,7 +154,6 @@ def test_yaml():
         assert cfg['PING']['PONG'] == 'lola'
     with pytest.raises(KeyError):
         assert cfg['JON'] == 'Hello'
-    assert len(cfg) == 5
     for name, value in cfg:
         assert isinstance(name, str)
 
@@ -155,10 +170,12 @@ def test_directories_str_param():
     assert cfg['WRITE__A'] == 'koko'
     assert cfg['MOLE'] == 'geers'
     assert cfg['SHAKE']['BAKE'] == 'bob'
+    assert cfg['shake']['BAKE'] == 'bob'
+    assert cfg['SHAKE']['bake'] == 'bob'
+    assert cfg['shake']['bake'] == 'bob'
     assert cfg['SHAKE__BAKE'] == 'bob'
     with pytest.raises(KeyError):
         assert cfg['JON'] == 'Hello'
-    assert len(cfg) == 5
     for name, value in cfg:
         assert isinstance(name, str)
 
