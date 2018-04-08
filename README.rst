@@ -81,7 +81,7 @@ Once defined in such a way, the ``Birch`` object can be used to access the value
 Hierarchical configuration
 --------------------------
 
-``birch`` supports a simple hierarchy between configuration mappings. ``__`` (two underscore characters) is used to signal a hierarchical mapping, so the ``ZUBAT__SERVER__PORT`` environment variable is equivalent to ``{'server': {'port': 55}}`` mapping given in a ``~/.zubat/cfg.json`` file, for example.
+``birch`` supports a simple hierarchy between configuration mappings. ``__`` (two underscore characters) is used to signal a hierarchical mapping, so the ``ZUBAT__SERVER__PORT`` environment variable is equivalent to ``{'server': {'port': 55}}`` mapping given in a ``~/.zubat/cfg.json`` file, for example. Casing is ignored in all levels.
 
 As such, hierarchical mapping can be accessed either using ``__`` to indicate a hierarchical path, or using dict-like item access:
 
@@ -94,9 +94,11 @@ As such, hierarchical mapping can be accessed either using ``__`` to indicate a 
   'www.zubat.com'
   >>>> zubat_cfg['SERVER']['HOST']
   'www.zubat.com'
+  >>>> zubat_cfg['SERVER']['host']
+  'www.zubat.com'
 
 
-**This is also true for non-hierarchical mappings**; so, ``{'server__port': 55}`` can be accessed using both ``zubat_cfg['SERVER__PORT']`` and ``zubat_cfg['SERVER']['PORT']``.
+**This is also true for non-hierarchical mappings**; so, ``{'server__port': 55}``, even when given in this form in a configuration file, can be accessed using both ``zubat_cfg['SERVER__PORT']`` and ``zubat_cfg['SERVER']['PORT']`` (casing is still ignored on all levels).
 
 
 Resolution order
