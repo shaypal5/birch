@@ -58,7 +58,7 @@ Basic use
   golbat_cfg = Birch('golbat')
 
 
-Each namespace encompasses all values set by either environment variables starting with ``<uppercase_namespace>_`` or ``<uppercase_namespace>__``, or defined within ``cfg`` files (of a supported format) located in the ``~/.<namespace>`` directory.
+Each namespace encompasses all values set by either environment variables starting with ``<uppercase_namespace>_``, or defined within ``cfg`` files (of a supported format) located in the ``~/.<namespace>`` directory.
 
 For example, the ``zubat`` namespace encompasses environment variables such as ``ZUBAT_HOSTNAME`` and ``ZUBAT__PORT``, and all mappings in the ``~/.zubat/cfg.json`` file (if it exists).
 
@@ -81,7 +81,7 @@ Once defined in such a way, the ``Birch`` object can be used to access the value
 Hierarchical configuration
 --------------------------
 
-``birch`` supports a simple hierarchy between configuration mappings. ``__`` (two underscore characters) is used to signal a hierarchical mapping, so the ``ZUBAT__SERVER__PORT`` environment variable is equivalent to ``{'server': {'port': 55}}`` mapping given in a ``~/.zubat/cfg.json`` file, for example. Casing is ignored in all levels.
+``birch`` supports a simple hierarchy between configuration mappings. Hierarchy is either expressed explicitly in configuration files as nested object/entries (in the case of ``json`` and ``YAML`` files), or using ``__`` (two underscore characters) in the configuration key - both in configuration files and environment variables. Thus, the ``ZUBAT__SERVER__PORT`` environment variable is equivalent to ``{'server': {'port': 55}}`` mapping given in a ``~/.zubat/cfg.json`` file, for example. Casing is ignored on all levels.
 
 As such, hierarchical mapping can be accessed either using ``__`` to indicate a hierarchical path, or using dict-like item access:
 
@@ -92,13 +92,13 @@ As such, hierarchical mapping can be accessed either using ``__`` to indicate a 
   >>> zubat_cfg = Birch('zubat')
   >>>> zubat_cfg['SERVER__HOST']
   'www.zubat.com'
-  >>>> zubat_cfg['SERVER']['HOST']
+  >>>> zubat_cfg['server']['HOST']
   'www.zubat.com'
   >>>> zubat_cfg['SERVER']['host']
   'www.zubat.com'
 
 
-**This is also true for non-hierarchical mappings**; so, ``{'server__port': 55}``, even when given in this form in a configuration file, can be accessed using both ``zubat_cfg['SERVER__PORT']`` and ``zubat_cfg['SERVER']['PORT']`` (casing is still ignored on all levels).
+**Note that this is true for non-hierarchical configuration file mappings**, so ``{'server__port': 55}``, even when given in this form in a configuration file, can be accessed using both ``zubat_cfg['SERVER__PORT']`` and ``zubat_cfg['SERVER']['PORT']`` (casing is still ignored on all levels).
 
 
 Resolution order
@@ -106,7 +106,7 @@ Resolution order
 
 A namespace is always loaded with matching environment variables **after** all configuration files has been loaded, and corresponding mappings will thus override their file-originating counterparts; e.g. the ``ZUBAT__SERVER__PORT`` environment variable will overwrite the value of the mapping ``{'server': {'port': 55}}`` given in a ``~/.zubat/cfg.json`` file. 
 
-The loading order of different files, while deterministic, is undefined and not part of the API. Thus, ``cfg`` files with different file extensions can not be relied upon to provide private-vs-shared configuration functionality.
+The loading order of different files, while deterministic, is undefined and not part of the API. Thus, ``cfg`` files with different file extensions can not be relied upon to provide private-vs-shared configuration functionality, or other such configuration modes.
 
 
 Configuring birch
@@ -121,7 +121,7 @@ By default ``birch`` looks for files only in the ``~/.<namespace>`` directory. Y
 File formats
 ~~~~~~~~~~~~
 
-By default, ``birch`` will only try to read ``cfg.json`` files. To dictate a different set of supported format, populate the ``supported_formats`` constructor parameter with the desired formats. 
+By default, ``birch`` will only try to read ``cfg.json`` files. To dictate a different set of supported formats, populate the ``supported_formats`` constructor parameter with the desired formats. 
 
 For example, ``Birch('zubat', supported_formats=['json', 'yaml'])`` will read both ``cfg.json`` and ``cfg.yaml`` files, while ``Birch('golbat', supported_formats='yaml')`` will ony read ``cfg.yaml`` (and ``cfg.yml``) files.
 
