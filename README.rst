@@ -98,7 +98,7 @@ As such, hierarchical mapping can be accessed either using ``__`` to indicate a 
   'www.zubat.com'
 
 
-**Note that this is true for non-hierarchical configuration file mappings**, so ``{'server__port': 55}``, even when given in this form in a configuration file, can be accessed using both ``zubat_cfg['SERVER__PORT']`` and ``zubat_cfg['SERVER']['PORT']`` (casing is still ignored on all levels).
+**Note that this is also true for non-hierarchical configuration file mappings**, so ``{'server__port': 55}``, even when given in this form in a configuration file, can be accessed using both ``zubat_cfg['SERVER__PORT']`` and ``zubat_cfg['SERVER']['PORT']`` (casing is still ignored on all levels).
 
 
 Resolution order
