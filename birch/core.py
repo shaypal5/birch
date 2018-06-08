@@ -17,6 +17,19 @@ from .exceptions import UnsupporedFormatException
 SEP = '__'
 
 
+def _legacy_cfg_dpath(namespace):
+    return os.path.expanduser('~/.{}'.format(namespace))
+
+
+XDG_CONFIG_HOME_VARNAME = 'XDG_CONFIG_HOME'
+
+
+def _xdg_cfg_dpath(namespace):
+    if XDG_CONFIG_HOME_VARNAME in os.environ:  # pragma: no cover
+        return '{}/{}'.format(os.environ[XDG_CONFIG_HOME_VARNAME], namespace)
+    return os.path.expanduser('~/.config/{}'.format(namespace))
+
+
 class Birch(collections.abc.Mapping):
     """Defines a configuration access object.
 
@@ -26,7 +39,8 @@ class Birch(collections.abc.Mapping):
         Root name to be used for configuration folder and variable names.
     directories : str or list of str, optional
         A list of directory paths in which to look for configuration files. If
-        not given '~/.namespace' is the only path used.
+        not given, defaults to a list containing '$XDG_CONFIG_HOME/namespace`
+        and '~/.namespace'.
     supported_formats : list of str, optional
         A list of configuration file formats to support; e.g. ['json', 'yml'].
         If not given, json is the only supported format.
@@ -53,8 +67,10 @@ class Birch(collections.abc.Mapping):
 
     def __init__(self, namespace, directories=None, supported_formats=None):
         if directories is None:
-            cfg_dpath = os.path.expanduser('~/.{}'.format(namespace))
-            directories = [cfg_dpath]
+            directories = [
+                _xdg_cfg_dpath(namespace=namespace),
+                _legacy_cfg_dpath(namespace=namespace),
+            ]
         if isinstance(directories, str):
             directories = [directories]
         if supported_formats is None:

@@ -8,6 +8,7 @@ import pytest
 import yaml
 from birch import Birch
 from birch.exceptions import UnsupporedFormatException
+from birch.core import _xdg_cfg_dpath
 
 
 NSPACE = 'toasttest'
@@ -39,6 +40,14 @@ VAL_DICT2 = {
     'lone': 'puf',
     'write': {
         'a': 'koko',
+    }
+}
+
+NSPACE4 = 'ricketyporpoise'
+VAL_DICT4 = {
+    'pik': 'puk',
+    'shik': {
+        'shuk': '8',
     }
 }
 
@@ -77,11 +86,19 @@ def do_something(request):
     with open(fpath3, 'w+') as cfile:
         yaml.dump(VAL_DICT2, cfile)
 
+    # NAMESPACE 4
+    cfg_dpath4 = _xdg_cfg_dpath(NSPACE4)
+    os.makedirs(cfg_dpath4, exist_ok=True)
+    fpath4 = os.path.join(cfg_dpath4, 'cfg.json')
+    with open(fpath4, 'w+') as cfile:
+        json.dump(VAL_DICT4, cfile)
+
     yield
     # Will be executed after the last test
     shutil.rmtree(cfg_dpath)
     shutil.rmtree(cfg_dpath2)
     shutil.rmtree(cfg_dpath3)
+    shutil.rmtree(cfg_dpath4)
 
 
 def test_json():
@@ -183,3 +200,15 @@ def test_directories_str_param():
 def test_unsupported_format():
     with pytest.raises(UnsupporedFormatException):
         Birch(NSPACE2, supported_formats=['yaml', 'lie'])
+
+
+def test_xdg_cfg_dir():
+    cfg = Birch(NSPACE4)
+    print(cfg._val_dict)
+    assert cfg['pik'] == 'puk'
+    assert cfg['shik']['shuk'] == str(8)
+    assert cfg['shik__shuk'] == str(8)
+    with pytest.raises(KeyError):
+        assert cfg['JON'] == 'Hello'
+    for name, value in cfg:
+        assert isinstance(name, str)
