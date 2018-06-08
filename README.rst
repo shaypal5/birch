@@ -195,7 +195,7 @@ Created by `Shay Palachy <http://www.shaypalachy.com/>`_ (shay.palachy@gmail.com
 .. |Build-Status| image:: https://travis-ci.org/shaypal5/birch.svg?branch=master
   :target: https://travis-ci.org/shaypal5/birch
 
-.. |LICENCE| image:: https://github.com/shaypal5/birch/blob/1e3162208282bf6d463495e8fc6663b2bae6041d/mit_license_badge.svg
+.. |LICENCE| image:: https://img.shields.io/badge/License-MIT-yellow.svg
   :target: https://github.com/shaypal5/birch/blob/master/LICENSE
 
 .. |Codecov| image:: https://codecov.io/github/shaypal5/birch/coverage.svg?branch=master
