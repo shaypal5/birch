@@ -15,7 +15,7 @@ Simple hierarchical configuration for Python packages.
 
   from birch import Birch
   cfg = Birch('mypackage')
-  # read both the MYPACKAGE_SERVER_HOSTNAME environment variable
+  # read using a single API both the MYPACKAGE_SERVER_HOSTNAME environment variable
   # and ~/.mypackage/cfg.json containing {'server': {'port': 55}}
   connect(cfg['SERVER__HOSTNAME'], cfg['server']['port'])
 
