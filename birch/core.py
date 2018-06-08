@@ -44,6 +44,11 @@ class Birch(collections.abc.Mapping):
     supported_formats : list of str, optional
         A list of configuration file formats to support; e.g. ['json', 'yml'].
         If not given, json is the only supported format.
+    load_all : bool, default False
+        If set to true, all compliant configuration files found in any of the
+        allowed directories are used to consturct the configuration tree, in
+        an undefined order. By default, the first such file encountered is
+        read.
     """
 
     class _NoVal(object):
@@ -65,7 +70,8 @@ class Birch(collections.abc.Mapping):
     except ImportError:  # pragma: no cover
         pass
 
-    def __init__(self, namespace, directories=None, supported_formats=None):
+    def __init__(self, namespace, directories=None, supported_formats=None,
+                 load_all=False):
         if directories is None:
             directories = [
                 _xdg_cfg_dpath(namespace=namespace),
@@ -87,6 +93,7 @@ class Birch(collections.abc.Mapping):
         self._envar_pat = r'{}((_|__)[A-Z0-9]+)+'.format(self._upper_namespace)
         self.directories = directories
         self.formats = supported_formats
+        self.load_all = load_all
         self._no_val = Birch._NoVal()
         self._val_dict = self._build_val_dict()
 
@@ -150,6 +157,8 @@ class Birch(collections.abc.Mapping):
         val_dict = CaseInsensitiveDict()
         for path in self._cfg_fpaths():
             val_dict.update(**self._read_cfg_file(path))
+            if not self.load_all:
+                break
         val_dict.update(**self._read_env_vars())
         val_dict = Birch._hierarchical_dict_from_dict(val_dict)
         return val_dict

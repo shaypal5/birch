@@ -35,6 +35,7 @@ Installation
 Features
 ========
 
+* `XDG Base Directory <https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>`_ support
 * Supported formats: JSON, YAML.
 * Pure python.
 * Supports Python 3.4+.
@@ -49,7 +50,7 @@ Basic use
 
 ``birch`` provides a simple way to read simple hierarchical configuration for your Python package or application from both environment variables and configuration files. 
 
-``birch`` uses namespaces to manage configuration values. The access to each namespace is done via a ``Birch`` object initialized with that namespace. Though written with a specific use case in mind, where a single package uses a single namespace to manage its configuration, any number of namespaces can be used. For example:
+``birch`` uses namespaces to manage configuration values. The access to each namespace is done via a ``Birch`` object initialized with that namespace. Though written with a specific use case in mind, where a single package uses a single namespace to manage its configuration, any number of namespaces can be used in a single context. For example:
 
 .. code-block:: python
 
@@ -58,9 +59,10 @@ Basic use
   golbat_cfg = Birch('golbat')
 
 
-Each namespace encompasses all values set by either environment variables starting with ``<uppercase_namespace>_``, or defined within ``cfg`` files (of a supported format) located in the ``~/.<namespace>`` directory.
+Each namespace encompasses all values set by either environment variables starting with ``<uppercase_namespace>_``, or defined within ``cfg`` files (of a supported format) located in a set of pre-configured directories; this set defaults to the ``~/.config/<namespace>`` (as par the `XDG Base Directory Specification <https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>`_) and the ``~/.<namespace>`` directories.
+cat: /tmp/vitmp: No such file or directory
 
-For example, the ``zubat`` namespace encompasses environment variables such as ``ZUBAT_HOSTNAME`` and ``ZUBAT__PORT``, and all mappings in the ``~/.zubat/cfg.json`` file (if it exists).
+For example, the ``zubat`` namespace encompasses environment variables such as ``ZUBAT_HOSTNAME`` and ``ZUBAT__PORT``, and all mappings in one of the files ``~/.config/.zubat/cfg.json`` or ``~/.zubat/cfg.json`` (if such a file exists).
 
 Once defined in such a way, the ``Birch`` object can be used to access the values of mappings of both types (with or without the namespace suffix; casing is also ignored). For example:
 
@@ -104,9 +106,9 @@ As such, hierarchical mapping can be accessed either using ``__`` to indicate a 
 Resolution order
 ----------------
 
-A namespace is always loaded with matching environment variables **after** all configuration files has been loaded, and corresponding mappings will thus override their file-originating counterparts; e.g. the ``ZUBAT__SERVER__PORT`` environment variable will overwrite the value of the mapping ``{'server': {'port': 55}}`` given in a ``~/.zubat/cfg.json`` file. 
+A namespace is always loaded with matching environment variables **after** the configuration file has been loaded, and corresponding mappings will thus override their file-originating counterparts; e.g. the ``ZUBAT__SERVER__PORT`` environment variable will overwrite the value of the mapping ``{'server': {'port': 55}}`` given in a ``~/.zubat/cfg.json`` file. 
 
-The loading order of different files, while deterministic, is undefined and not part of the API. Thus, ``cfg`` files with different file extensions can not be relied upon to provide private-vs-shared configuration functionality, or other such configuration modes.
+The lookup order of different files, while deterministic, is undefined and not part of the API. Thus, even with the ``load_all`` option set (see the `Configuring birch`_ section), ``cfg`` files with different file extensions can not be relied upon to provide private-vs-shared configuration functionality, or other such configuration modes.
 
 
 Configuring birch
@@ -115,7 +117,9 @@ Configuring birch
 Configuration directories
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-By default ``birch`` looks for files only in the ``~/.<namespace>`` directory. You can set a different set of directories to read by populating the ``directories`` constructor parameter with a different directory path, or a list of paths.
+By default ``birch`` looks for files only in the ``~/.config/<namespace>`` and ``~/.<namespace>`` directories. You can set a different set of directories to read by populating the ``directories`` constructor parameter with a different directory path, or a list of paths.
+
+Similarlym, be default ``birch`` reads into the configuration tree only the first compliant file encountered during a lookup in all pre-configured directories; to instead load hierarchical configurations from all such files instead, the ``load_all`` constructor parameter can be set to ``True``. Again, load order is undefined, and thus so is the resulting hierarchical configuration.
 
 
 File formats

@@ -102,7 +102,7 @@ def do_something(request):
 
 
 def test_json():
-    cfg = Birch(NSPACE)
+    cfg = Birch(NSPACE, load_all=True)
     print(cfg._val_dict)
     assert cfg['basekey'] == 'base_val'
     assert cfg['BASEKEY'] == 'base_val'
