@@ -212,3 +212,15 @@ def test_xdg_cfg_dir():
         assert cfg['JON'] == 'Hello'
     for name, value in cfg:
         assert isinstance(name, str)
+
+
+def test_xdg_cfg_dir_with_load_all():
+    cfg = Birch(NSPACE4, load_all=True)
+    print(cfg._val_dict)
+    assert cfg['pik'] == 'puk'
+    assert cfg['shik']['shuk'] == str(8)
+    assert cfg['shik__shuk'] == str(8)
+    with pytest.raises(KeyError):
+        assert cfg['JON'] == 'Hello'
+    for name, value in cfg:
+        assert isinstance(name, str)

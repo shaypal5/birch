@@ -135,7 +135,7 @@ class Birch(collections.abc.Mapping):
                 val_dict = deserial(cfile)
             val_dict = Birch._hierarchical_dict_from_dict(val_dict)
             return val_dict
-        except FileNotFoundError:
+        except FileNotFoundError:  # pragma: no cover
             return {}
 
     def _read_env_vars(self):
@@ -156,9 +156,10 @@ class Birch(collections.abc.Mapping):
     def _build_val_dict(self):
         val_dict = CaseInsensitiveDict()
         for path in self._cfg_fpaths():
-            val_dict.update(**self._read_cfg_file(path))
-            if not self.load_all:
-                break
+            if os.path.isfile(path):
+                val_dict.update(**self._read_cfg_file(path))
+                if not self.load_all:
+                    break
         val_dict.update(**self._read_env_vars())
         val_dict = Birch._hierarchical_dict_from_dict(val_dict)
         return val_dict
