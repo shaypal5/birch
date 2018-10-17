@@ -60,7 +60,6 @@ Basic use
 
 
 Each namespace encompasses all values set by either environment variables starting with ``<uppercase_namespace>_``, or defined within ``cfg`` files (of a supported format) located in a set of pre-configured directories; this set defaults to the ``~/.config/<namespace>`` (as par the `XDG Base Directory Specification <https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>`_) and the ``~/.<namespace>`` directories.
-cat: /tmp/vitmp: No such file or directory
 
 For example, the ``zubat`` namespace encompasses environment variables such as ``ZUBAT_HOSTNAME`` and ``ZUBAT__PORT``, and all mappings in one of the files ``~/.config/.zubat/cfg.json`` or ``~/.zubat/cfg.json`` (if such a file exists).
 
