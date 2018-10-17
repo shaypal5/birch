@@ -82,7 +82,7 @@ Once defined in such a way, the ``Birch`` object can be used to access the value
 Hierarchical configuration
 --------------------------
 
-``birch`` supports a simple hierarchy between configuration mappings. Hierarchy is either expressed explicitly in configuration files as nested object/entries (in the case of ``json`` and ``YAML`` files), or using ``__`` (two underscore characters) in the configuration key - both in configuration files and environment variables. Thus, the ``ZUBAT__SERVER__PORT`` environment variable is equivalent to ``{'server': {'port': 55}}`` mapping given in a ``~/.zubat/cfg.json`` file, for example. Casing is ignored on all levels.
+``birch`` supports a simple hierarchy between configuration mappings. Hierarchy is either expressed explicitly in configuration files as nested object/entries (in the case of ``json`` and ``YAML`` files), or using ``__`` (two underscore characters) in the configuration key - both in configuration files and environment variables. Thus, the ``ZUBAT__SERVER__PORT`` environment variable is equivalent to both ``{'server': {'port': 55}}`` and ``{'server__PORT': 55}`` mappings given in a ``~/.zubat/cfg.json`` file, for example. Casing is ignored on all levels.
 
 As such, hierarchical mapping can be accessed either using ``__`` to indicate a hierarchical path, or using dict-like item access:
 
