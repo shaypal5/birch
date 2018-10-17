@@ -35,7 +35,7 @@ Installation
 Features
 ========
 
-* `XDG Base Directory Specification <https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>`_ support
+* `XDG Base Directory Specification <https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>`_ support.
 * Supported formats: JSON, YAML.
 * Pure python.
 * Supports Python 3.4+.
