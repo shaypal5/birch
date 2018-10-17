@@ -84,7 +84,7 @@ Hierarchical configuration
 
 ``birch`` supports a simple hierarchy between configuration mappings. Hierarchy is either expressed explicitly in configuration files as nested object/entries (in the case of ``json`` and ``YAML`` files), or using ``__`` (two underscore characters) in the configuration key - both in configuration files and environment variables. Thus, the ``ZUBAT__SERVER__PORT`` environment variable is equivalent to both ``{'server': {'port': 55}}`` and ``{'server__PORT': 55}`` mappings given in a ``~/.zubat/cfg.json`` file, for example. Casing is ignored on all levels.
 
-As such, hierarchical mapping can be accessed either using ``__`` to indicate a hierarchical path, or using dict-like item access:
+As such, hierarchical mappings can be accessed either using ``__`` to indicate a hierarchical path, or using dict-like item access:
 
 .. code-block:: python
 
@@ -118,7 +118,7 @@ Configuration directories
 
 By default ``birch`` looks for files only in the ``~/.config/<namespace>`` and ``~/.<namespace>`` directories. You can set a different set of directories to read by populating the ``directories`` constructor parameter with a different directory path, or a list of paths.
 
-Similarlym, be default ``birch`` reads into the configuration tree only the first compliant file encountered during a lookup in all pre-configured directories; to instead load hierarchical configurations from all such files instead, the ``load_all`` constructor parameter can be set to ``True``. Again, load order is undefined, and thus so is the resulting hierarchical configuration.
+Similarly, be default ``birch`` reads into the configuration tree only the first compliant file encountered during a lookup in all pre-configured directories; to instead load hierarchical configurations from all such files instead, the ``load_all`` constructor parameter can be set to ``True``. Again, load order is undefined, and thus so is the resulting hierarchical configuration.
 
 
 File formats
