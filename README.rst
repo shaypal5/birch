@@ -48,7 +48,7 @@ Use
 Basic use
 ---------
 
-``birch`` provides a simple way to read simple hierarchical configuration for your Python package or application from both environment variables and configuration files. 
+``birch`` provides an easy way to read simple hierarchical configurations for your Python package or application from both environment variables and configuration files. 
 
 ``birch`` uses namespaces to manage configuration values. The access to each namespace is done via a ``Birch`` object initialized with that namespace. Though written with a specific use case in mind, where a single package uses a single namespace to manage its configuration, any number of namespaces can be used in a single context. For example:
 
