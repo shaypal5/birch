@@ -38,7 +38,7 @@ Features
 * `XDG Base Directory Specification <https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>`_ support.
 * Supported formats: JSON, YAML.
 * Pure python.
-* Supports Python 3.4+.
+* Supports Python 3.5+.
 * Fully tested.
 
 
@@ -110,11 +110,43 @@ A namespace is always loaded with matching environment variables **after** the c
 The lookup order of different files, while deterministic, is undefined and not part of the API. Thus, even with the ``load_all`` option set (see the `Configuring birch`_ section), ``cfg`` files with different file extensions can not be relied upon to provide private-vs-shared configuration functionality, or other such configuration modes.
 
 
+Reloading configuration
+-----------------------
+
+Configuration values can be reloaded from all sources - both configuration files and environment variables - by calling the ``reload`` method:
+
+.. code-block:: python
+
+  >>> os.environ['ZUBAT__SERVER__HOST'] = 'www.zubat.com'
+  >>> from birch import Birch
+  >>> zubat_cfg = Birch('zubat')
+  >>>> zubat_cfg['SERVER__HOST']
+  'www.zubat.com'
+  >>> os.environ['ZUBAT__SERVER__HOST'] = 'New.value!'
+  >>> zubat_cfg.reload()
+  >>>> zubat_cfg['server']['HOST']
+  'New.value!'
+
+You can set automatic configuration reload on every value inspection by setting ``auto_reload=True`` when initializing the ``Birch`` object:
+
+.. code-block:: python
+
+  >>> os.environ['ZUBAT__SERVER__HOST'] = 'www.zubat.com'
+  >>> from birch import Birch
+  >>> zubat_cfg = Birch('zubat', auto_reload=True)
+  >>>> zubat_cfg['SERVER__HOST']
+  'www.zubat.com'
+  >>> os.environ['ZUBAT__SERVER__HOST'] = 'New.value!'
+  >>>> zubat_cfg['server']['HOST']
+  'New.value!'
+
+
+
 Configuring birch
------------------
+=================
 
 Configuration directories
-~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------
 
 By default ``birch`` looks for files only in the ``~/.config/<namespace>`` and ``~/.<namespace>`` directories. You can set a different set of directories to read by populating the ``directories`` constructor parameter with a different directory path, or a list of paths.
 
@@ -122,7 +154,7 @@ Similarly, be default ``birch`` reads into the configuration tree only the first
 
 
 File formats
-~~~~~~~~~~~~
+------------
 
 By default, ``birch`` will only try to read ``cfg.json`` files. To dictate a different set of supported formats, populate the ``supported_formats`` constructor parameter with the desired formats. 
 

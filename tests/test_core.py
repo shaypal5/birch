@@ -56,7 +56,7 @@ VAL_DICT4 = {
 def setup_cfg_file(namespace, val_dict, ext):
     cfg_dpath = os.path.expanduser('~/.{}'.format(namespace))
     os.makedirs(cfg_dpath, exist_ok=True)
-    fpath = os.path.join(cfg_dpath, f'cfg.{ext}')
+    fpath = os.path.join(cfg_dpath, 'cfg.{}'.format(ext))
     with open(fpath, 'w+') as cfile:
         if (ext == 'yaml') or (ext == 'yml'):
             yaml.dump(val_dict, cfile)
@@ -250,7 +250,7 @@ def test_envvar_with_reload():
     print(cfg._val_dict)
     assert cfg['mole'] == 'geers'
     assert cfg['MOLE'] == 'geers'
-    mole_envar = f'{NSPACE2.upper()}__MOLE'
+    mole_envar = '{}__MOLE'.format(NSPACE2.upper())
     mole_val = 'kirgizi'
     os.environ[mole_envar] = mole_val
     cfg.reload()
@@ -290,7 +290,7 @@ def test_envvar_with_auto_reload():
     print(cfg._val_dict)
     assert cfg['mole'] == 'geers'
     assert cfg['MOLE'] == 'geers'
-    mole_envar = f'{NSPACE2.upper()}__MOLE'
+    mole_envar = '{}__MOLE'.format(NSPACE2.upper())
     mole_val = 'kirgizi'
     os.environ[mole_envar] = mole_val
     print(cfg._val_dict)
