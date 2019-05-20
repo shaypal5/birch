@@ -2,6 +2,7 @@
 
 import os
 import json
+import copy
 import shutil
 
 import pytest
@@ -52,15 +53,38 @@ VAL_DICT4 = {
 }
 
 
+def setup_cfg_file(namespace, val_dict, ext):
+    cfg_dpath = os.path.expanduser('~/.{}'.format(namespace))
+    os.makedirs(cfg_dpath, exist_ok=True)
+    fpath = os.path.join(cfg_dpath, f'cfg.{ext}')
+    with open(fpath, 'w+') as cfile:
+        if (ext == 'yaml') or (ext == 'yml'):
+            yaml.dump(val_dict, cfile)
+        elif ext == 'json':
+            json.dump(val_dict, cfile)
+        else:
+            raise ValueError("Unknown file extension for birch test cfg file!")
+    return cfg_dpath
+
+
+def prepare_namespace_2():
+    # NAMESPACE 2
+    # - prepare cfg file
+    cfg_dpath2 = setup_cfg_file(
+        namespace=NSPACE2, val_dict=VAL_DICT2, ext='yml')
+    # - prepare cfg env vars
+    os.environ[NSPACE2.upper() + '__MOLE'] = 'geers'
+    os.environ[NSPACE2.upper() + '__SHAKE__BAKE'] = 'bob'
+    os.environ[NSPACE2.upper() + '_PING_PONG'] = 'lola'
+    return cfg_dpath2
+
+
 @pytest.fixture(scope="session", autouse=True)
 def do_something(request):
     # Will be executed before the first test
     # - prepare cfg file
-    cfg_dpath = os.path.expanduser('~/.{}'.format(NSPACE))
-    os.makedirs(cfg_dpath, exist_ok=True)
-    fpath = os.path.join(cfg_dpath, 'cfg.json')
-    with open(fpath, 'w+') as cfile:
-        json.dump(VAL_DICT, cfile)
+    cfg_dpath = setup_cfg_file(
+        namespace=NSPACE, val_dict=VAL_DICT, ext='json')
     # - prepare cfg env vars
     os.environ[NSPACE.upper() + '__NEGA'] = 'Uvavo'
     os.environ[NSPACE.upper() + '__MIKE'] = str(88)
@@ -68,16 +92,7 @@ def do_something(request):
     os.environ[NSPACE.upper() + '__MAN__WEIGHT'] = '73'
 
     # NAMESPACE 2
-    # - prepare cfg file
-    cfg_dpath2 = os.path.expanduser('~/.{}'.format(NSPACE2))
-    os.makedirs(cfg_dpath2, exist_ok=True)
-    fpath2 = os.path.join(cfg_dpath2, 'cfg.yml')
-    with open(fpath2, 'w+') as cfile:
-        yaml.dump(VAL_DICT2, cfile)
-    # - prepare cfg env vars
-    os.environ[NSPACE2.upper() + '__MOLE'] = 'geers'
-    os.environ[NSPACE2.upper() + '__SHAKE__BAKE'] = 'bob'
-    os.environ[NSPACE2.upper() + '_PING_PONG'] = 'lola'
+    cfg_dpath2 = prepare_namespace_2()
 
     # NAMESPACE 3
     cfg_dpath3 = os.path.expanduser('~/{}'.format(NSPACE2))
@@ -224,3 +239,81 @@ def test_xdg_cfg_dir_with_load_all():
         assert cfg['JON'] == 'Hello'
     for name, value in cfg:
         assert isinstance(name, str)
+
+
+def test_envvar_with_reload():
+    cfg = Birch(
+        NSPACE2,
+        directories=[os.path.expanduser('~/.{}'.format(NSPACE2))],
+        supported_formats=['yaml'],
+    )
+    print(cfg._val_dict)
+    assert cfg['mole'] == 'geers'
+    assert cfg['MOLE'] == 'geers'
+    mole_envar = f'{NSPACE2.upper()}__MOLE'
+    mole_val = 'kirgizi'
+    os.environ[mole_envar] = mole_val
+    cfg.reload()
+    print(cfg._val_dict)
+    assert cfg[mole_envar] == mole_val
+    assert cfg['mole'] == mole_val
+    assert cfg['MOLE'] == mole_val
+
+
+def test_yaml_with_reload():
+    cfg = Birch(
+        NSPACE2,
+        directories=[os.path.expanduser('~/.{}'.format(NSPACE2))],
+        supported_formats=['yaml'],
+    )
+    print(cfg._val_dict)
+    assert cfg['lone'] == 'puf'
+    assert cfg['LONE'] == 'puf'
+    lone_val = 'kakara'
+    updated_valdict = copy.deepcopy(VAL_DICT2)
+    updated_valdict['lone'] = lone_val
+    setup_cfg_file(namespace=NSPACE2, val_dict=updated_valdict, ext='yml')
+    cfg.reload()
+    print(cfg._val_dict)
+    assert cfg['lone'] == lone_val
+    assert cfg['LONE'] == lone_val
+
+
+def test_envvar_with_auto_reload():
+    prepare_namespace_2()
+    cfg = Birch(
+        NSPACE2,
+        directories=[os.path.expanduser('~/.{}'.format(NSPACE2))],
+        supported_formats=['yaml'],
+        auto_reload=True,
+    )
+    print(cfg._val_dict)
+    assert cfg['mole'] == 'geers'
+    assert cfg['MOLE'] == 'geers'
+    mole_envar = f'{NSPACE2.upper()}__MOLE'
+    mole_val = 'kirgizi'
+    os.environ[mole_envar] = mole_val
+    print(cfg._val_dict)
+    assert cfg[mole_envar] == mole_val
+    assert cfg['mole'] == mole_val
+    assert cfg['MOLE'] == mole_val
+
+
+def test_yaml_with_auto_reload():
+    prepare_namespace_2()
+    cfg = Birch(
+        NSPACE2,
+        directories=[os.path.expanduser('~/.{}'.format(NSPACE2))],
+        supported_formats=['yaml'],
+        auto_reload=True,
+    )
+    print(cfg._val_dict)
+    assert cfg['lone'] == 'puf'
+    assert cfg['LONE'] == 'puf'
+    lone_val = 'kakara'
+    updated_valdict = copy.deepcopy(VAL_DICT2)
+    updated_valdict['lone'] = lone_val
+    setup_cfg_file(namespace=NSPACE2, val_dict=updated_valdict, ext='yml')
+    print(cfg._val_dict)
+    assert cfg['lone'] == lone_val
+    assert cfg['LONE'] == lone_val

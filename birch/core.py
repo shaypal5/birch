@@ -49,14 +49,22 @@ class Birch(collections.abc.Mapping):
         allowed directories are used to consturct the configuration tree, in
         an undefined order. By default, the first such file encountered is
         read.
+    auto_reload : bool, default False
+        If set to true, the reload() method is automatically called first
+        at the start of every get() or __getitem__() call (also when using the
+        obj[key] syntax). This ensures every configuration value retrieved is
+        up-to-date to all configuration sources (both files and env variables).
     """
 
     class _NoVal(object):
         pass
 
     _CFG_FNAME_PAT = 'cfg.{}'
-    _EXT_TO_DESERIALZE_MAP = {
+    _EXT_TO_DESERIALIZER_MAP = {
         '.json': json.load,
+    }
+    _EXT_TO_DESERIALIZER_KWARGS_MAP = {
+        '.json': {},
     }
     _FMT_TO_EXT_MAP = {
         'json': ['json'],
@@ -65,13 +73,16 @@ class Birch(collections.abc.Mapping):
 
     try:
         import yaml
-        _EXT_TO_DESERIALZE_MAP['.yml'] = yaml.load
-        _EXT_TO_DESERIALZE_MAP['.yaml'] = yaml.load
+        _EXT_TO_DESERIALIZER_MAP['.yml'] = yaml.load
+        _EXT_TO_DESERIALIZER_MAP['.yaml'] = yaml.load
+        yaml_load_kwargs = {'Loader': yaml.SafeLoader}
+        _EXT_TO_DESERIALIZER_KWARGS_MAP['.yml'] = yaml_load_kwargs
+        _EXT_TO_DESERIALIZER_KWARGS_MAP['.yaml'] = yaml_load_kwargs
     except ImportError:  # pragma: no cover
         pass
 
     def __init__(self, namespace, directories=None, supported_formats=None,
-                 load_all=False):
+                 load_all=False, auto_reload=False):
         if directories is None:
             directories = [
                 _xdg_cfg_dpath(namespace=namespace),
@@ -94,7 +105,13 @@ class Birch(collections.abc.Mapping):
         self.directories = directories
         self.formats = supported_formats
         self.load_all = load_all
+        self._auto_reload = auto_reload
         self._no_val = Birch._NoVal()
+        self._val_dict = self._build_val_dict()
+
+    def reload(self):
+        """Reloads configuration values from all sources."""
+        print("reloading")
         self._val_dict = self._build_val_dict()
 
     def _cfg_fpaths(self):
@@ -127,12 +144,13 @@ class Birch(collections.abc.Mapping):
     def _read_cfg_file(self, fpath):
         _, ext = os.path.splitext(fpath)
         try:
-            deserial = Birch._EXT_TO_DESERIALZE_MAP[ext]
+            deserial = Birch._EXT_TO_DESERIALIZER_MAP[ext]
+            deserial_kwargs = Birch._EXT_TO_DESERIALIZER_KWARGS_MAP[ext]
         except KeyError:  # pragma: no cover
             return {}
         try:
             with open(fpath, 'r') as cfile:
-                val_dict = deserial(cfile)
+                val_dict = deserial(cfile, **deserial_kwargs)
             val_dict = Birch._hierarchical_dict_from_dict(val_dict)
             return val_dict
         except FileNotFoundError:  # pragma: no cover
@@ -170,6 +188,9 @@ class Birch(collections.abc.Mapping):
             key = key.upper()
         except AttributeError:
             raise ValueError("Birch does not support non-string keys!")
+        print(self._auto_reload)
+        if self._auto_reload:
+            self.reload()
         if self._root2 in key:
             key = key[self._root_len2:]
         elif self._root1 in key:
