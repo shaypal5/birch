@@ -1,7 +1,7 @@
 birch |birch_icon|
 ##################
 
-|PyPI-Status| |PyPI-Versions| |Build-Status| |Codecov| |Codacy| |LICENCE|
+|PyPI-Status| |PyPI-Versions| |Build-Status| |Codecov| |Codacy| |Requirements| |LICENCE|
 
 Simple hierarchical configuration for Python packages.
 
@@ -236,3 +236,7 @@ Created by `Shay Palachy <http://www.shaypalachy.com/>`_ (shay.palachy@gmail.com
 .. |Codacy| image:: https://api.codacy.com/project/badge/Grade/99e79faee7454a13a0e60219c32015ae
    :alt: Codacy Badge
    :target: https://app.codacy.com/app/shaypal5/birch?utm_source=github.com&utm_medium=referral&utm_content=shaypal5/birch&utm_campaign=Badge_Grade_Dashboard
+
+.. |Requirements| image:: https://requires.io/github/shaypal5/birch/requirements.svg?branch=master
+     :target: https://requires.io/github/shaypal5/birch/requirements/?branch=master
+     :alt: Requirements Status
