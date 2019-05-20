@@ -1,5 +1,9 @@
 birch |birch_icon|
 ##################
+
+.. image:: https://api.codacy.com/project/badge/Grade/99e79faee7454a13a0e60219c32015ae
+   :alt: Codacy Badge
+   :target: https://app.codacy.com/app/shaypal5/birch?utm_source=github.com&utm_medium=referral&utm_content=shaypal5/birch&utm_campaign=Badge_Grade_Dashboard
 |PyPI-Status| |PyPI-Versions| |Build-Status| |Codecov| |LICENCE|
 
 Simple hierarchical configuration for Python packages.
