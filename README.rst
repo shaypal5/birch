@@ -36,11 +36,11 @@ Installation
 Features
 ========
 
-* `XDG Base Directory Specification <https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>`_ support.
 * Supported formats: JSON, YAML.
 * Pure python.
 * Supports Python 3.5+.
-* Fully tested.
+* Supported and `fully tested on Linux, OS X and Windows <https://codecov.io/github/shaypal5/birch>`_.
+* `XDG Base Directory Specification <https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>`_ support.
 
 
 Use
