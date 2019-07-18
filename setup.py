@@ -32,7 +32,7 @@ setuptools.setup(
     url='https://github.com/shaypal5/birch',
     packages=setuptools.find_packages(),
     include_package_data=True,
-    python_requires=">=3.5",
+    # python_requires=">=3.5",
     install_requires=[
         INSTALL_REQUIRES
     ],

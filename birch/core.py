@@ -111,7 +111,6 @@ class Birch(collections.abc.Mapping):
 
     def reload(self):
         """Reloads configuration values from all sources."""
-        print("reloading")
         self._val_dict = self._build_val_dict()
 
     def _cfg_fpaths(self):
@@ -188,7 +187,6 @@ class Birch(collections.abc.Mapping):
             key = key.upper()
         except AttributeError:
             raise ValueError("Birch does not support non-string keys!")
-        print(self._auto_reload)
         if self._auto_reload:
             self.reload()
         if self._root2 in key:
@@ -204,7 +202,8 @@ class Birch(collections.abc.Mapping):
         except KeyError:
             res = safe_nested_val(key_tuple, self._val_dict, self._no_val)
         if res == self._no_val:
-            raise KeyError("No configuration value for {}.".format(key))
+            raise KeyError("{}: No configuration value for {}.".format(
+                self.namespace, key))
         return res
 
     def get(self, key, default=None):
