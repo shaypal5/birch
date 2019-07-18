@@ -1,7 +1,7 @@
 birch |birch_icon|
 ##################
 
-|PyPI-Status| |PyPI-Versions| |Build-Status| |Codecov| |Codacy| |Requirements| |LICENCE|
+|PyPI-Status| |Downloads| |PyPI-Versions| |Build-Status| |Codecov| |Codefactor| |LICENCE|
 
 Simple hierarchical configuration for Python packages.
 
@@ -225,10 +225,10 @@ Created by `Shay Palachy <http://www.shaypalachy.com/>`_ (shay.palachy@gmail.com
    :target: https://pypi.python.org/pypi/birch
 
 .. |Build-Status| image:: https://travis-ci.org/shaypal5/birch.svg?branch=master
-  :target: https://travis-ci.org/shaypal5/birch
+   :target: https://travis-ci.org/shaypal5/birch
 
 .. |LICENCE| image:: https://img.shields.io/badge/License-MIT-yellow.svg
-  :target: https://github.com/shaypal5/birch/blob/master/LICENSE
+   :target: https://github.com/shaypal5/birch/blob/master/LICENSE
 
 .. |Codecov| image:: https://codecov.io/github/shaypal5/birch/coverage.svg?branch=master
    :target: https://codecov.io/github/shaypal5/birch?branch=master
@@ -238,5 +238,13 @@ Created by `Shay Palachy <http://www.shaypalachy.com/>`_ (shay.palachy@gmail.com
    :target: https://app.codacy.com/app/shaypal5/birch?utm_source=github.com&utm_medium=referral&utm_content=shaypal5/birch&utm_campaign=Badge_Grade_Dashboard
 
 .. |Requirements| image:: https://requires.io/github/shaypal5/birch/requirements.svg?branch=master
-     :target: https://requires.io/github/shaypal5/birch/requirements/?branch=master
-     :alt: Requirements Status
+   :target: https://requires.io/github/shaypal5/birch/requirements/?branch=master
+   :alt: Requirements Status
+     
+.. |Codefactor| image:: https://www.codefactor.io/repository/github/shaypal5/birch/badge?style=plastic
+   :target: https://www.codefactor.io/repository/github/shaypal5/birch
+   :alt: Codefactor code quality
+
+.. |Downloads| image:: https://pepy.tech/badge/birch
+   :target: https://pepy.tech/project/birch
+   :alt: PePy stats
