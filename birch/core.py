@@ -206,7 +206,44 @@ class Birch(collections.abc.Mapping):
                 self.namespace, key))
         return res
 
-    def get(self, key, default=None):
+    def mget(self, key, caster=None):
+        """Return the value for key if it's in the configuration..
+
+        Parameters
+        ----------
+        key : object
+            The key of the value to get.
+        caster : callable, optional
+            If given, any found value is passed through the caster before
+            returning.
+
+        Returns
+        -------
+        object
+            The value the given key maps to, if it is in the configuration.
+
+        Example
+        -------
+        >>> import os; os.environ['ZUBAT__PORT'] = '555'
+        >>> os.environ['ZUBAT__MPORT'] = 'Banana'
+        >>> zubat_cfg = Birch('zubat')
+        >>> zubat_cfg.mget('port', int)
+        555
+        >>> zubat_cfg.mget('mport', int)
+        Traceback (most recent call last):
+          ...
+        ValueError: zubat: Wrong configuration value Banana casted with <class 'int'>
+        """  # noqa: E501
+        if caster:
+            try:
+                return caster(self[key])
+            except ValueError:
+                raise ValueError(
+                    "{}: Wrong configuration value {} casted with {}".format(
+                        self.namespace, self[key], caster))
+        return self[key]
+
+    def get(self, key, default=None, caster=None):
         """Return the value for key if it's in the configuration, else default.
 
         If default is not given, it defaults to None, so that this method never
@@ -219,15 +256,28 @@ class Birch(collections.abc.Mapping):
         default : object, optional
             If the key is not found, this value is returned. If note given, it
             defaults to None, so that this method never raised a KeyError.
+        caster : callable, optional
+            If given, any found value is passed through the caster before
+            returning.
 
         Returns
         -------
         object
             The value the given key maps to, if it is in the configuration.
             Else, the default value is returned.
+
+        Example
+        -------
+        >>> import os; os.environ['ZUBAT__PORT'] = '555'
+        >>> zubat_cfg = Birch('zubat')
+        >>> zubat_cfg.get('port', default=8888, caster=int)
+        555
+        >>> zubat_cfg.get('host', default='defhost')
+        'defhost'
+        >>> zubat_cfg.get('host')  # No error is thrown
         """
         try:
-            return self[key]
+            return self.mget(key=key, caster=caster)
         except KeyError:
             return default
 

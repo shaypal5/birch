@@ -80,6 +80,33 @@ Once defined in such a way, the ``Birch`` object can be used to access the value
   '87'
 
 
+The get and mget methods
+------------------------
+
+Birch objects expose two methods that allow more nuanced retreival of configuration items:
+
+The ``mget`` method allows the caller to supply a ``caster`` callable, through-which any found return value will be passed:
+
+.. code-block:: python
+
+  >>> os.environ['ZUBAT__PORT'] = '555'
+  >>> zubat_cfg = Birch('zubat')
+  >>> zubat_cfg.mget('port', int)
+  555
+
+
+The ``get`` method additionally allows you to supply a default value, which is returned if no matching configuration entry is found:
+
+.. code-block:: python
+  >>> import os; os.environ['ZUBAT__PORT'] = '555'
+  >>> zubat_cfg = Birch('zubat')
+  >>> zubat_cfg.get('port', default=8888, caster=int)
+  555
+  >>> zubat_cfg.get('host', default='defhost')
+  'defhost'
+  >>> zubat_cfg.get('host')  # No error is thrown
+
+
 Hierarchical configuration
 --------------------------
 
