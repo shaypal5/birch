@@ -98,6 +98,7 @@ The ``mget`` method allows the caller to supply a ``caster`` callable, through-w
 The ``get`` method additionally allows you to supply a default value, which is returned if no matching configuration entry is found:
 
 .. code-block:: python
+
   >>> import os; os.environ['ZUBAT__PORT'] = '555'
   >>> zubat_cfg = Birch('zubat')
   >>> zubat_cfg.get('port', default=8888, caster=int)
