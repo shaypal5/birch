@@ -1,5 +1,5 @@
-birch |birch_icon|
-##################
+birch ᛣ
+#######
 
 |PyPI-Status| |Downloads| |PyPI-Versions| |Build-Status| |Codecov| |Codefactor| |LICENCE|
 
