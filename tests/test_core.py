@@ -159,6 +159,10 @@ def test_json():
 
     with pytest.raises(KeyError):
         assert cfg['JON'] == 'Hello'
+    assert cfg.get('JON') is None
+    assert cfg.get('JON', default='Hello') == 'Hello'
+    with pytest.raises(KeyError):
+        assert cfg.get('JON', throw=True) is None
     assert len(cfg) == 17
     for name, value in cfg:
         assert isinstance(name, str)

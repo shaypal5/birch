@@ -243,11 +243,11 @@ class Birch(collections.abc.Mapping):
                         self.namespace, self[key], caster))
         return self[key]
 
-    def get(self, key, default=None, caster=None):
+    def get(self, key, default=None, caster=None, throw=False):
         """Return the value for key if it's in the configuration, else default.
 
         If default is not given, it defaults to None, so that this method never
-        raises a KeyError.
+        raises a KeyError, unless throw is set to True.
 
         Parameters
         ----------
@@ -259,6 +259,9 @@ class Birch(collections.abc.Mapping):
         caster : callable, optional
             If given, any found value is passed through the caster before
             returning.
+        throw : bool, default False
+            If set to True, a KeyError is raised if no matching key is found
+            AND the default value provided is None (which is the default).
 
         Returns
         -------
@@ -278,7 +281,9 @@ class Birch(collections.abc.Mapping):
         """
         try:
             return self.mget(key=key, caster=caster)
-        except KeyError:
+        except KeyError as e:
+            if throw and default is None:
+                raise e
             return default
 
     @staticmethod
