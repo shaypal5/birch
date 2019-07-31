@@ -103,9 +103,20 @@ The ``get`` method additionally allows you to supply a default value, which is r
   >>> zubat_cfg = Birch('zubat')
   >>> zubat_cfg.get('port', default=8888, caster=int)
   555
-  >>> zubat_cfg.get('host', default='defhost')
+  >>> zubat_cfg.get('host', default='defhost')  # Default value is returned
   'defhost'
-  >>> zubat_cfg.get('host')  # No error is thrown
+  >>> zubat_cfg.get('host')  # No error is thrown, None is returned
+
+
+If no default value is provided, ``None`` is returned. To still have a ``KeyError`` raised in this case use ``throw=True`` in the function call:
+.. code-block:: python
+
+  >>> import os; os.environ['ZUBAT__PORT'] = '555'
+  >>> zubat_cfg = Birch('zubat')
+  >>> zubat_cfg.get('host', throw=True)  # An error is thrown
+  Traceback (most recent call last):
+    ...
+  KeyError: zubat: No configuration value for HOST.
 
 
 Hierarchical configuration
