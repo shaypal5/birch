@@ -287,3 +287,5 @@ Created by `Shay Palachy <http://www.shaypalachy.com/>`_ (shay.palachy@gmail.com
 .. |Downloads| image:: https://pepy.tech/badge/birch
    :target: https://pepy.tech/project/birch
    :alt: PePy stats
+
+.. .. test pypi
