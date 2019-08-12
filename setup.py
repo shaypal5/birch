@@ -25,7 +25,7 @@ setuptools.setup(
     author_email="shay.palachy@gmail.com",
     name='birch',
     license="MIT",
-    description='Utilities for pandas.',
+    description='Simple hierarchical configuration for Python packages',
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     long_description=README,
