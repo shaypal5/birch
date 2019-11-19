@@ -156,6 +156,9 @@ def test_json():
     assert cfg.get('NOT_LVL2') == 'C'
     assert cfg.get('NOT_LVL2', '32') == 'C'
     assert cfg.get('doesnt exists', '3321') == '3321'
+    assert cfg.get('doesnt exists', None) is None
+    with pytest.warns(UserWarning):
+        assert cfg.get('doesnt exists', None, warn=True) is None
 
     with pytest.raises(KeyError):
         assert cfg['JON'] == 'Hello'

@@ -3,6 +3,7 @@
 import os
 import re
 import json
+import warnings
 import collections
 
 from strct.dicts import (
@@ -243,7 +244,7 @@ class Birch(collections.abc.Mapping):
                         self.namespace, self[key], caster))
         return self[key]
 
-    def get(self, key, default=None, caster=None, throw=False):
+    def get(self, key, default=None, caster=None, throw=False, warn=False):
         """Return the value for key if it's in the configuration, else default.
 
         If default is not given, it defaults to None, so that this method never
@@ -262,6 +263,10 @@ class Birch(collections.abc.Mapping):
         throw : bool, default False
             If set to True, a KeyError is raised if no matching key is found
             AND the default value provided is None (which is the default).
+        warn : bool, default False
+            If set to True, a warning is issued if no matching key is found
+            AND the default value provided is None (which is the default) AND
+            throw is set to False.
 
         Returns
         -------
@@ -282,8 +287,14 @@ class Birch(collections.abc.Mapping):
         try:
             return self.mget(key=key, caster=caster)
         except KeyError as e:
-            if throw and default is None:
-                raise e
+            if default is None:
+                if throw:
+                    raise e
+                if warn:
+                    warnings.warn((
+                        "None or no value was provided to configuration value "
+                        "{} for {}!").format(
+                            key, self.namespace))
             return default
 
     @staticmethod
