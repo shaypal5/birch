@@ -109,6 +109,7 @@ The ``get`` method additionally allows you to supply a default value, which is r
 
 
 If no default value is provided, ``None`` is returned. To still have a ``KeyError`` raised in this case use ``throw=True`` in the function call:
+
 .. code-block:: python
 
   >>> import os; os.environ['ZUBAT__PORT'] = '555'
@@ -117,6 +118,15 @@ If no default value is provided, ``None`` is returned. To still have a ``KeyErro
   Traceback (most recent call last):
     ...
   KeyError: zubat: No configuration value for HOST.
+
+To have a warning raised (and the code continue to run) in this case, use ``warn=True`` instead:
+
+.. code-block:: python
+
+  >>> import os; os.environ['ZUBAT__PORT'] = '555'
+  >>> zubat_cfg = Birch('zubat')
+  >>> zubat_cfg.get('host', warn=True)  # A warning is raised
+  None or no value was provided to configuration value host for zubat!
 
 
 Hierarchical configuration
