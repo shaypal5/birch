@@ -17,7 +17,7 @@ TEST_REQUIRES = [
     'collective.checkdocs', 'pygments',
 ]
 
-with open('README.rst') as f:
+with open('README.rst', encoding="utf-8") as f:
     README = f.read()
 
 setuptools.setup(
