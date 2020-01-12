@@ -27,7 +27,7 @@ matrix:
         - python3 --version
         - pip3 install -U pip
         - pip3 install -U pytest
-            - pip3 install codecov
+        - pip3 install codecov
       install:
         - pip3 install ".[test]"
       script: python3 -m pytest
