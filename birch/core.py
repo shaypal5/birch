@@ -19,7 +19,10 @@ SEP = '__'
 
 
 def _legacy_cfg_dpath(namespace):
-    return os.path.expanduser('~/.{}'.format(namespace))
+    return os.path.join(
+        os.path.expanduser('~'),
+        '.{}'.format(namespace),
+    )
 
 
 XDG_CONFIG_HOME_VARNAME = 'XDG_CONFIG_HOME'
@@ -27,8 +30,15 @@ XDG_CONFIG_HOME_VARNAME = 'XDG_CONFIG_HOME'
 
 def _xdg_cfg_dpath(namespace):
     if XDG_CONFIG_HOME_VARNAME in os.environ:  # pragma: no cover
-        return '{}/{}'.format(os.environ[XDG_CONFIG_HOME_VARNAME], namespace)
-    return os.path.expanduser('~/.config/{}'.format(namespace))
+        return os.path.join(
+            os.environ[XDG_CONFIG_HOME_VARNAME],
+            namespace,
+        )
+    return os.path.join(
+        os.path.expanduser('~'),
+        '.config',
+        namespace,
+    )
 
 
 class Birch(collections.abc.Mapping):
