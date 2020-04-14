@@ -54,7 +54,10 @@ VAL_DICT4 = {
 
 
 def setup_cfg_file(namespace, val_dict, ext):
-    cfg_dpath = os.path.expanduser('~/.{}'.format(namespace))
+    cfg_dpath = os.path.join(
+        os.path.expanduser('~'),
+        '.{}'.format(namespace),
+    )
     os.makedirs(cfg_dpath, exist_ok=True)
     fpath = os.path.join(cfg_dpath, 'cfg.{}'.format(ext))
     with open(fpath, 'w+') as cfile:
@@ -95,7 +98,10 @@ def do_something(request):
     cfg_dpath2 = prepare_namespace_2()
 
     # NAMESPACE 3
-    cfg_dpath3 = os.path.expanduser('~/{}'.format(NSPACE2))
+    cfg_dpath3 = os.path.join(
+        os.path.expanduser('~'),
+        '{}'.format(NSPACE2),
+    )
     os.makedirs(cfg_dpath3, exist_ok=True)
     fpath3 = os.path.join(cfg_dpath3, 'cfg.yml')
     with open(fpath3, 'w+') as cfile:
@@ -172,9 +178,13 @@ def test_json():
 
 
 def test_yaml():
+    dpath = os.path.join(
+        os.path.expanduser('~'),
+        '.{}'.format(NSPACE2),
+    )
     cfg = Birch(
         NSPACE2,
-        directories=[os.path.expanduser('~/.{}'.format(NSPACE2))],
+        directories=[dpath],
         supported_formats=['yaml'],
     )
     print(cfg._val_dict)
@@ -198,9 +208,13 @@ def test_yaml():
 
 
 def test_directories_str_param():
+    dpath = os.path.join(
+        os.path.expanduser('~'),
+        '{}'.format(NSPACE2),
+    )
     cfg = Birch(
         NSPACE2,
-        directories=os.path.expanduser('~/{}'.format(NSPACE2)),
+        directories=dpath,
         supported_formats='yaml',
     )
     print(cfg._val_dict)
@@ -249,9 +263,13 @@ def test_xdg_cfg_dir_with_load_all():
 
 
 def test_envvar_with_reload():
+    dpath = os.path.join(
+        os.path.expanduser('~'),
+        '.{}'.format(NSPACE2),
+    )
     cfg = Birch(
         NSPACE2,
-        directories=[os.path.expanduser('~/.{}'.format(NSPACE2))],
+        directories=[dpath],
         supported_formats=['yaml'],
     )
     print(cfg._val_dict)
@@ -268,9 +286,13 @@ def test_envvar_with_reload():
 
 
 def test_yaml_with_reload():
+    dpath = os.path.join(
+        os.path.expanduser('~'),
+        '.{}'.format(NSPACE2),
+    )
     cfg = Birch(
         NSPACE2,
-        directories=[os.path.expanduser('~/.{}'.format(NSPACE2))],
+        directories=[dpath],
         supported_formats=['yaml'],
     )
     print(cfg._val_dict)
@@ -288,9 +310,13 @@ def test_yaml_with_reload():
 
 def test_envvar_with_auto_reload():
     prepare_namespace_2()
+    dpath = os.path.join(
+        os.path.expanduser('~'),
+        '.{}'.format(NSPACE2),
+    )
     cfg = Birch(
         NSPACE2,
-        directories=[os.path.expanduser('~/.{}'.format(NSPACE2))],
+        directories=[dpath],
         supported_formats=['yaml'],
         auto_reload=True,
     )
@@ -308,9 +334,13 @@ def test_envvar_with_auto_reload():
 
 def test_yaml_with_auto_reload():
     prepare_namespace_2()
+    dpath = os.path.join(
+        os.path.expanduser('~'),
+        '.{}'.format(NSPACE2),
+    )
     cfg = Birch(
         NSPACE2,
-        directories=[os.path.expanduser('~/.{}'.format(NSPACE2))],
+        directories=[dpath],
         supported_formats=['yaml'],
         auto_reload=True,
     )
