@@ -2,5 +2,5 @@
 
 
 class UnsupporedFormatException(Exception):
-    """An exception raised when birch enconters an unsupported format."""
+    """An exception raised when birch encounters an unsupported format."""
     pass
