@@ -83,7 +83,7 @@ def prepare_namespace_2():
 
 
 @pytest.fixture(scope="session", autouse=True)
-def do_something(request):
+def tests_setup_and_teardown():
     # Will be executed before the first test
     # - prepare cfg file
     cfg_dpath = setup_cfg_file(
