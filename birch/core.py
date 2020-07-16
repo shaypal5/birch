@@ -65,6 +65,13 @@ class Birch(collections.abc.Mapping):
         at the start of every get() or __getitem__() call (also when using the
         obj[key] syntax). This ensures every configuration value retrieved is
         up-to-date to all configuration sources (both files and env variables).
+    defaults : dict of str to object, optional
+        A dictionary of default value to any number of keys or nested keys.
+        Nested keys must be given as __-separated key sequences. For example,
+        {'ZUBAT__SERVER__PORT': 8888} will set the int 8888 as the default
+        value for birch_obj['server']['port']. {'server__port': 8888} will do
+        the same. Notice that arguments provided to the `default` keyword of
+        the `get` method will override these constructor-provided defaults.
     """
 
     class _NoVal(object):
@@ -93,7 +100,7 @@ class Birch(collections.abc.Mapping):
         pass
 
     def __init__(self, namespace, directories=None, supported_formats=None,
-                 load_all=False, auto_reload=False):
+                 load_all=False, auto_reload=False, defaults=None):
         if directories is None:
             directories = [
                 _xdg_cfg_dpath(namespace=namespace),
@@ -119,6 +126,9 @@ class Birch(collections.abc.Mapping):
         self._auto_reload = auto_reload
         self._no_val = Birch._NoVal()
         self._val_dict = self._build_val_dict()
+        self._defaults = None
+        if defaults is not None:
+            self._defaults = self._build_defaults_dict(defaults)
 
     def reload(self):
         """Reloads configuration values from all sources."""
@@ -192,6 +202,18 @@ class Birch(collections.abc.Mapping):
         val_dict = Birch._hierarchical_dict_from_dict(val_dict)
         return val_dict
 
+    def _build_defaults_dict(self, defaults):
+        val_dict = CaseInsensitiveDict()
+        for key, value in defaults.items():
+            new_key = key
+            if key[:self._root_len1] == self._root1:
+                new_key = key[self._root_len1:]
+            elif key[:self._root_len2] == self._root2:
+                new_key = key[self._root_len2:]
+            val_dict[new_key] = value
+        val_dict = Birch._hierarchical_dict_from_dict(val_dict)
+        return val_dict
+
     # implementing a collections.abc.Mapping abstract method
     def __getitem__(self, key):
         try:
@@ -257,8 +279,10 @@ class Birch(collections.abc.Mapping):
     def get(self, key, default=None, caster=None, throw=False, warn=False):
         """Return the value for key if it's in the configuration, else default.
 
-        If default is not given, it defaults to None, so that this method never
-        raises a KeyError, unless throw is set to True.
+        If `default` is not given, a default value is looked up in the
+        constructor-initialized `defaults` dict. If no such default is found,
+        the return value defaults to None, so that this method never raises a
+        KeyError, unless `throw` is set to True.
 
         Parameters
         ----------
@@ -298,13 +322,25 @@ class Birch(collections.abc.Mapping):
             return self.mget(key=key, caster=caster)
         except KeyError as e:
             if default is None:
-                if throw:
-                    raise e
-                if warn:
-                    warnings.warn((
-                        "None or no value was provided to configuration value "
-                        "{} for {}!").format(
-                            key, self.namespace))
+                value = self._defaults[key]
+                try:
+                    if caster:
+                        try:
+                            return caster(value)
+                        except ValueError:
+                            raise ValueError((
+                                "{}: Wrong default configuration value {} "
+                                "casted with {}").format(
+                                    self.namespace, value, caster))
+                    return value
+                except KeyError:
+                    if throw:
+                        raise e
+                    if warn:
+                        warnings.warn((
+                            "None or no value was provided to configuration "
+                            "value {} for {}!").format(
+                                key, self.namespace))
             return default
 
     @staticmethod

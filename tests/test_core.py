@@ -354,3 +354,15 @@ def test_yaml_with_auto_reload():
     print(cfg._val_dict)
     assert cfg['lone'] == lone_val
     assert cfg['LONE'] == lone_val
+
+
+def test_envvars_with_defaults():
+    prepare_namespace_2()
+    defaults = {
+        '{}__NAKOKO'.format(NSPACE2): 45,
+        '{}__NANA_BOKO'.format(NSPACE2): 'rar',
+    }
+    cfg = Birch(
+        NSPACE2,
+        defaults=defaults,
+    )
