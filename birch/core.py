@@ -125,10 +125,8 @@ class Birch(collections.abc.Mapping):
         self.load_all = load_all
         self._auto_reload = auto_reload
         self._no_val = Birch._NoVal()
+        self._defaults = defaults
         self._val_dict = self._build_val_dict()
-        self._defaults = None
-        if defaults is not None:
-            self._defaults = self._build_defaults_dict(defaults)
 
     def reload(self):
         """Reloads configuration values from all sources."""
@@ -191,17 +189,6 @@ class Birch(collections.abc.Mapping):
         val_dict = Birch._hierarchical_dict_from_dict(val_dict)
         return val_dict
 
-    def _build_val_dict(self):
-        val_dict = CaseInsensitiveDict()
-        for path in self._cfg_fpaths():
-            if os.path.isfile(path):
-                val_dict.update(**self._read_cfg_file(path))
-                if not self.load_all:
-                    break
-        val_dict.update(**self._read_env_vars())
-        val_dict = Birch._hierarchical_dict_from_dict(val_dict)
-        return val_dict
-
     def _build_defaults_dict(self, defaults):
         val_dict = CaseInsensitiveDict()
         for key, value in defaults.items():
@@ -211,6 +198,19 @@ class Birch(collections.abc.Mapping):
             elif key[:self._root_len2] == self._root2:
                 new_key = key[self._root_len2:]
             val_dict[new_key] = value
+        val_dict = Birch._hierarchical_dict_from_dict(val_dict)
+        return val_dict
+
+    def _build_val_dict(self):
+        val_dict = CaseInsensitiveDict()
+        if self._defaults is not None:
+            val_dict = Birch._build_defaults_dict(self._defaults)
+        for path in self._cfg_fpaths():
+            if os.path.isfile(path):
+                val_dict.update(**self._read_cfg_file(path))
+                if not self.load_all:
+                    break
+        val_dict.update(**self._read_env_vars())
         val_dict = Birch._hierarchical_dict_from_dict(val_dict)
         return val_dict
 
@@ -279,10 +279,8 @@ class Birch(collections.abc.Mapping):
     def get(self, key, default=None, caster=None, throw=False, warn=False):
         """Return the value for key if it's in the configuration, else default.
 
-        If `default` is not given, a default value is looked up in the
-        constructor-initialized `defaults` dict. If no such default is found,
-        the return value defaults to None, so that this method never raises a
-        KeyError, unless `throw` is set to True.
+        If default is not given, it defaults to None, so that this method never
+        raises a KeyError, unless throw is set to True.
 
         Parameters
         ----------
@@ -322,25 +320,13 @@ class Birch(collections.abc.Mapping):
             return self.mget(key=key, caster=caster)
         except KeyError as e:
             if default is None:
-                value = self._defaults[key]
-                try:
-                    if caster:
-                        try:
-                            return caster(value)
-                        except ValueError:
-                            raise ValueError((
-                                "{}: Wrong default configuration value {} "
-                                "casted with {}").format(
-                                    self.namespace, value, caster))
-                    return value
-                except KeyError:
-                    if throw:
-                        raise e
-                    if warn:
-                        warnings.warn((
-                            "None or no value was provided to configuration "
-                            "value {} for {}!").format(
-                                key, self.namespace))
+                if throw:
+                    raise e
+                if warn:
+                    warnings.warn((
+                        "None or no value was provided to configuration value "
+                        "{} for {}!").format(
+                            key, self.namespace))
             return default
 
     @staticmethod

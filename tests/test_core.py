@@ -358,11 +358,24 @@ def test_yaml_with_auto_reload():
 
 def test_envvars_with_defaults():
     prepare_namespace_2()
+    k1 = 'NAKOKO'
+    full_k1 = '{}__{}'.format(NSPACE2, k1)
+    v1 = 45
+    k2_1 = 'NANA'
+    k2_2 = 'BOKO'
+    full_k2 = '{}__{}__{}'.format(NSPACE2, k2_1, k2_2)
+    v2 = 'rar'
     defaults = {
-        '{}__NAKOKO'.format(NSPACE2): 45,
-        '{}__NANA_BOKO'.format(NSPACE2): 'rar',
+        k1: v1,
+        full_k2: v2,
     }
     cfg = Birch(
         NSPACE2,
         defaults=defaults,
     )
+    assert cfg[k1] == v1
+    assert cfg[full_k1] == v1
+    assert cfg.mget(full_k1) == v1
+    assert cfg.get(k1) == v1
+    assert cfg[k2_1][k2_2] == v2
+    assert cfg[full_k2] == v2
