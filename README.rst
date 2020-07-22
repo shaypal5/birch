@@ -174,6 +174,15 @@ You can easily assign default value to any number of keys or nested keys by prov
   >>> golbat_cfg['SERVER']['protocol']
   'http'
 
+These values will be overwritten by configuration values loaded from both files and environment variables:
+
+.. code-block:: python
+  
+  >>> os.environ['GOLBAT__SERVER__HOST'] = 'www.zubat.com'
+  >>> golbat_cfg = Birch('golbat', defaults=defaults)
+  >>> golbat_cfg['SERVER__HOST']
+  'www.zubat.com'
+
 
 Resolution order
 ----------------
