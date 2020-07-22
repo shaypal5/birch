@@ -182,6 +182,8 @@ These values will be overwritten by configuration values loaded from both files 
   >>> golbat_cfg = Birch('golbat', defaults=defaults)
   >>> golbat_cfg['SERVER__HOST']
   'www.zubat.com'
+  >>> golbat_cfg['SERVER']['PORT']
+  8888
 
 
 Resolution order
