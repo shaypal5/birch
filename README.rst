@@ -156,7 +156,7 @@ As such, hierarchical mappings can be accessed either using ``__`` to indicate a
 Default values
 --------------
 
-You can easily assign default value to any number of keys or nested keys by providing the ``defaults`` constructor keyword argument with a ``dict`` containing such mappings:
+You can easily assign default values to any number of keys or nested keys by providing the ``defaults`` constructor keyword argument with a ``dict`` containing such mappings:
 
 .. code-block:: python
 
