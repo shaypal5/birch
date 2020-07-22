@@ -67,11 +67,13 @@ class Birch(collections.abc.Mapping):
         up-to-date to all configuration sources (both files and env variables).
     defaults : dict of str to object, optional
         A dictionary of default value to any number of keys or nested keys.
-        Nested keys must be given as __-separated key sequences. For example,
-        {'ZUBAT__SERVER__PORT': 8888} will set the int 8888 as the default
-        value for birch_obj['server']['port']. {'server__port': 8888} will do
-        the same. Notice that arguments provided to the `default` keyword of
-        the `get` method will override these constructor-provided defaults.
+        Nested keys canbe given as either __-separated key sequences or nested
+        dict objects. For example, {'ZUBAT__SERVER__PORT': 8888} will set the
+        int 8888 as the default value for birch_obj['server']['port'].
+        {'server__port': 8888} will do the same, as will {'server': {'port':
+        8888}}. Notice that arguments provided to the `default` keyword of
+        the `get` method will override these constructor-provided defaults. See
+        the "Resolution order" in the ``README.rst`` file for more details.
     """
 
     class _NoVal(object):

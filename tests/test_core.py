@@ -369,11 +369,15 @@ def test_envvars_with_defaults():
     v3 = 'yever'
     full_k4 = '{}_magi'.format(NSPACE2)
     v4 = 39
+    k5_1 = 'anil'
+    k5_2 = 'shanil'
+    v5 = 'baril'
     defaults = {
         k1: v1,
         full_k2: v2,
         k3: v3,
         full_k4: v4,
+        k5_1: {k5_2: v5},
     }
     cfg = Birch(
         NSPACE2,
@@ -387,6 +391,7 @@ def test_envvars_with_defaults():
     assert cfg[full_k2] == v2
     assert cfg[k3] == v3
     assert cfg[full_k4] == v4
+    assert cfg[k5_1][k5_2] == v5
 
     with pytest.raises(ValueError):
         cfg = Birch(
