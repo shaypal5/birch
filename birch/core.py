@@ -193,10 +193,17 @@ class Birch(collections.abc.Mapping):
         val_dict = CaseInsensitiveDict()
         for key, value in defaults.items():
             new_key = key
-            if key[:self._root_len1] == self._root1:
-                new_key = key[self._root_len1:]
-            elif key[:self._root_len2] == self._root2:
-                new_key = key[self._root_len2:]
+            try:
+                new_key = new_key.upper()
+            except AttributeError:
+                raise ValueError((
+                    "Birch does not support non-string keys! "
+                    "{} provided as key!".format(key)
+                ))
+            if new_key[:self._root_len2] == self._root2:
+                new_key = new_key[self._root_len2:]
+            elif new_key[:self._root_len1] == self._root1:
+                new_key = new_key[self._root_len1:]
             val_dict[new_key] = value
         val_dict = Birch._hierarchical_dict_from_dict(val_dict)
         return val_dict
@@ -204,7 +211,7 @@ class Birch(collections.abc.Mapping):
     def _build_val_dict(self):
         val_dict = CaseInsensitiveDict()
         if self._defaults is not None:
-            val_dict = Birch._build_defaults_dict(self._defaults)
+            val_dict = self._build_defaults_dict(self._defaults)
         for path in self._cfg_fpaths():
             if os.path.isfile(path):
                 val_dict.update(**self._read_cfg_file(path))
@@ -219,7 +226,10 @@ class Birch(collections.abc.Mapping):
         try:
             key = key.upper()
         except AttributeError:
-            raise ValueError("Birch does not support non-string keys!")
+            raise ValueError((
+                "Birch does not support non-string keys! "
+                "{} provided as key!".format(key)
+            ))
         if self._auto_reload:
             self.reload()
         if self._root2 in key:

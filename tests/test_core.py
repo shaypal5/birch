@@ -359,15 +359,21 @@ def test_yaml_with_auto_reload():
 def test_envvars_with_defaults():
     prepare_namespace_2()
     k1 = 'NAKOKO'
-    full_k1 = '{}__{}'.format(NSPACE2, k1)
+    full_k1 = '{}_{}'.format(NSPACE2, k1)
     v1 = 45
     k2_1 = 'NANA'
     k2_2 = 'BOKO'
     full_k2 = '{}__{}__{}'.format(NSPACE2, k2_1, k2_2)
     v2 = 'rar'
+    k3 = 'lemer'
+    v3 = 'yever'
+    full_k4 = '{}_magi'.format(NSPACE2)
+    v4 = 39
     defaults = {
         k1: v1,
         full_k2: v2,
+        k3: v3,
+        full_k4: v4,
     }
     cfg = Birch(
         NSPACE2,
@@ -379,3 +385,11 @@ def test_envvars_with_defaults():
     assert cfg.get(k1) == v1
     assert cfg[k2_1][k2_2] == v2
     assert cfg[full_k2] == v2
+    assert cfg[k3] == v3
+    assert cfg[full_k4] == v4
+
+    with pytest.raises(ValueError):
+        cfg = Birch(
+            NSPACE2,
+            defaults={2: 'kpkp'},
+        )
