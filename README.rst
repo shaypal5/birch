@@ -68,11 +68,12 @@ Once defined in such a way, the ``Birch`` object can be used to access the value
 
 .. code-block:: python
 
+  >>> import os
   >>> os.environ['ZUBAT_SERVER_HOST'] = 'www.zubat.com'
   >>> os.environ['ZUBAT_SERVER_PORT'] = '87'
   >>> from birch import Birch
   >>> zubat_cfg = Birch('zubat')
-  >>>> zubat_cfg['ZUBAT_SERVER_HOST']
+  >>> zubat_cfg['ZUBAT_SERVER_HOST']
   'www.zubat.com'
   >>> zubat_cfg['SERVER_PORT']
   '87'
@@ -117,15 +118,15 @@ If no default value is provided, ``None`` is returned. To still have a ``KeyErro
   >>> zubat_cfg.get('host', throw=True)  # An error is thrown
   Traceback (most recent call last):
     ...
-  KeyError: zubat: No configuration value for HOST.
+  KeyError: 'zubat: No configuration value for HOST.'
 
 To have a warning raised (and the code continue to run) in this case, use ``warn=True`` instead:
 
 .. code-block:: python
 
-  >>> import os; os.environ['ZUBAT__PORT'] = '555'
-  >>> zubat_cfg = Birch('zubat')
-  >>> zubat_cfg.get('host', warn=True)  # A warning is raised
+  >> import os; os.environ['ZUBAT__PORT'] = '555'
+  >> zubat_cfg = Birch('zubat')
+  >> zubat_cfg.get('host', warn=True)  # A warning is raised
   None or no value was provided to configuration value host for zubat!
 
 
@@ -141,15 +142,48 @@ As such, hierarchical mappings can be accessed either using ``__`` to indicate a
   >>> os.environ['ZUBAT__SERVER__HOST'] = 'www.zubat.com'
   >>> from birch import Birch
   >>> zubat_cfg = Birch('zubat')
-  >>>> zubat_cfg['SERVER__HOST']
+  >>> zubat_cfg['SERVER__HOST']
   'www.zubat.com'
-  >>>> zubat_cfg['server']['HOST']
+  >>> zubat_cfg['server']['HOST']
   'www.zubat.com'
-  >>>> zubat_cfg['SERVER']['host']
+  >>> zubat_cfg['SERVER']['host']
   'www.zubat.com'
 
 
 **Note that this is also true for non-hierarchical configuration file mappings**, so ``{'server__port': 55}``, even when given in this form in a configuration file, can be accessed using both ``zubat_cfg['SERVER__PORT']`` and ``zubat_cfg['SERVER']['PORT']`` (casing is still ignored on all levels).
+
+
+Default values
+--------------
+
+You can easily assign default values to any number of keys or nested keys by providing the ``defaults`` constructor keyword argument with a ``dict`` containing such mappings:
+
+.. code-block:: python
+
+  >>> from birch import Birch
+  >>> defaults = {
+  ...     'server': {'host': 'www.boogle.com'},
+  ...     'server__port': 8888,
+  ...      'GOLBAT__SERVER__PROTOCOL': 'http',
+  ... }
+  >>> golbat_cfg = Birch('golbat', defaults=defaults)
+  >>> golbat_cfg['SERVER__HOST']
+  'www.boogle.com'
+  >>> golbat_cfg['SERVER']['PORT']
+  8888
+  >>> golbat_cfg['SERVER']['protocol']
+  'http'
+
+These values will be overwritten by configuration values loaded from both files and environment variables:
+
+.. code-block:: python
+  
+  >>> os.environ['GOLBAT__SERVER__HOST'] = 'www.zubat.com'
+  >>> golbat_cfg = Birch('golbat', defaults=defaults)
+  >>> golbat_cfg['SERVER__HOST']
+  'www.zubat.com'
+  >>> golbat_cfg['SERVER']['PORT']
+  8888
 
 
 Resolution order
@@ -158,6 +192,8 @@ Resolution order
 A namespace is always loaded with matching environment variables **after** the configuration file has been loaded, and corresponding mappings will thus override their file-originating counterparts; e.g. the ``ZUBAT__SERVER__PORT`` environment variable will overwrite the value of the mapping ``{'server': {'port': 55}}`` given in a ``~/.zubat/cfg.json`` file. 
 
 The lookup order of different files, while deterministic, is undefined and not part of the API. Thus, even with the ``load_all`` option set (see the `Configuring birch`_ section), ``cfg`` files with different file extensions can not be relied upon to provide private-vs-shared configuration functionality, or other such configuration modes.
+
+Finally, loading of configuration values from both files and environment variables is done **after** the default values provided in the ``defaults`` constructor argument are loaded, so they both override default values.
 
 
 Reloading configuration
@@ -170,11 +206,11 @@ Configuration values can be reloaded from all sources - both configuration files
   >>> os.environ['ZUBAT__SERVER__HOST'] = 'www.zubat.com'
   >>> from birch import Birch
   >>> zubat_cfg = Birch('zubat')
-  >>>> zubat_cfg['SERVER__HOST']
+  >>> zubat_cfg['SERVER__HOST']
   'www.zubat.com'
   >>> os.environ['ZUBAT__SERVER__HOST'] = 'New.value!'
   >>> zubat_cfg.reload()
-  >>>> zubat_cfg['server']['HOST']
+  >>> zubat_cfg['server']['HOST']
   'New.value!'
 
 You can set automatic configuration reload on every value inspection by setting ``auto_reload=True`` when initializing the ``Birch`` object:
@@ -184,10 +220,10 @@ You can set automatic configuration reload on every value inspection by setting 
   >>> os.environ['ZUBAT__SERVER__HOST'] = 'www.zubat.com'
   >>> from birch import Birch
   >>> zubat_cfg = Birch('zubat', auto_reload=True)
-  >>>> zubat_cfg['SERVER__HOST']
+  >>> zubat_cfg['SERVER__HOST']
   'www.zubat.com'
   >>> os.environ['ZUBAT__SERVER__HOST'] = 'New.value!'
-  >>>> zubat_cfg['server']['HOST']
+  >>> zubat_cfg['server']['HOST']
   'New.value!'
 
 

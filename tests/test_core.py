@@ -354,3 +354,47 @@ def test_yaml_with_auto_reload():
     print(cfg._val_dict)
     assert cfg['lone'] == lone_val
     assert cfg['LONE'] == lone_val
+
+
+def test_envvars_with_defaults():
+    prepare_namespace_2()
+    k1 = 'NAKOKO'
+    full_k1 = '{}_{}'.format(NSPACE2, k1)
+    v1 = 45
+    k2_1 = 'NANA'
+    k2_2 = 'BOKO'
+    full_k2 = '{}__{}__{}'.format(NSPACE2, k2_1, k2_2)
+    v2 = 'rar'
+    k3 = 'lemer'
+    v3 = 'yever'
+    full_k4 = '{}_magi'.format(NSPACE2)
+    v4 = 39
+    k5_1 = 'anil'
+    k5_2 = 'shanil'
+    v5 = 'baril'
+    defaults = {
+        k1: v1,
+        full_k2: v2,
+        k3: v3,
+        full_k4: v4,
+        k5_1: {k5_2: v5},
+    }
+    cfg = Birch(
+        NSPACE2,
+        defaults=defaults,
+    )
+    assert cfg[k1] == v1
+    assert cfg[full_k1] == v1
+    assert cfg.mget(full_k1) == v1
+    assert cfg.get(k1) == v1
+    assert cfg[k2_1][k2_2] == v2
+    assert cfg[full_k2] == v2
+    assert cfg[k3] == v3
+    assert cfg[full_k4] == v4
+    assert cfg[k5_1][k5_2] == v5
+
+    with pytest.raises(ValueError):
+        cfg = Birch(
+            NSPACE2,
+            defaults={2: 'kpkp'},
+        )
