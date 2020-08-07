@@ -354,3 +354,14 @@ def test_yaml_with_auto_reload():
     print(cfg._val_dict)
     assert cfg['lone'] == lone_val
     assert cfg['LONE'] == lone_val
+
+
+def test_xdg_cfg_dpath():
+    cfg = Birch(NSPACE4)
+    returned_dpath = cfg.xdg_cfg_dpath()
+    try:
+        xdg_cfg_home = os.environ['XDG_CONFIG_HOME']
+        assert '{}/{}'.format(xdg_cfg_home, NSPACE4) in returned_dpath
+    except KeyError:
+        homedir = os.path.expanduser('~')
+        assert '{}/.config/{}'.format(homedir, NSPACE4) in returned_dpath

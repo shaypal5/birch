@@ -94,9 +94,10 @@ class Birch(collections.abc.Mapping):
 
     def __init__(self, namespace, directories=None, supported_formats=None,
                  load_all=False, auto_reload=False):
+        self._xdg_cfg_dpath = _xdg_cfg_dpath(namespace=namespace)
         if directories is None:
             directories = [
-                _xdg_cfg_dpath(namespace=namespace),
+                self._xdg_cfg_dpath,
                 _legacy_cfg_dpath(namespace=namespace),
             ]
         if isinstance(directories, str):
@@ -119,6 +120,16 @@ class Birch(collections.abc.Mapping):
         self._auto_reload = auto_reload
         self._no_val = Birch._NoVal()
         self._val_dict = self._build_val_dict()
+
+    def xdg_cfg_dpath(self):
+        """Returns the XDG-compliant configuration home for this namespace.
+
+        If the ``XDG_CONFIG_HOME`` environmet variable is set to some path
+        `<xdg_cfg_home>`, this will return the path
+        `<xdg_cfg_home>/<namespace>/`. Otherwise, this will return the path
+        `<home_dir>/.config/<namespace>/`.
+        """
+        return self._xdg_cfg_dpath
 
     def reload(self):
         """Reloads configuration values from all sources."""
