@@ -356,8 +356,8 @@ class Birch(collections.abc.Mapping):
     def _leafcounter(node):
         if isinstance(node, dict):
             return sum([Birch._leafcounter(node[n]) for n in node])
-        else:
-            return 1
+        # else:
+        return 1
 
     # implementing a collections.abc.mapping abstract method
     def __len__(self):

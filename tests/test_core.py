@@ -139,7 +139,7 @@ def test_json():
     assert cfg['SERVER']['port'] == 1293
     assert cfg['server']['port'] == 1293
     with pytest.raises(KeyError):
-        cfg['SERVER'][4]
+        res = cfg['SERVER'][4]
     assert cfg['{}_SERVER__PORT'.format(NSPACE)] == 1293
     assert cfg['{}__SERVER__PORT'.format(NSPACE)] == 1293
     assert cfg['nega'] == 'Uvavo'
@@ -148,7 +148,7 @@ def test_json():
     assert cfg['MAN']['HEIGHT'] == '175'
     assert cfg['MAN__WEIGHT'] == '73'
     with pytest.raises(ValueError):
-        cfg[54]
+        res = cfg[54]
 
     assert cfg['MOCK__LVL'] == 'A'
     assert cfg['mock__lvl'] == 'A'
