@@ -405,7 +405,8 @@ def test_xdg_cfg_dpath():
     returned_dpath = cfg.xdg_cfg_dpath()
     try:
         xdg_cfg_home = os.environ['XDG_CONFIG_HOME']
-        assert '{}/{}'.format(xdg_cfg_home, NSPACE4) in returned_dpath
+        expected_path = os.path.join(xdg_cfg_home, NSPACE4)
     except KeyError:
         homedir = os.path.expanduser('~')
-        assert '{}/.config/{}'.format(homedir, NSPACE4) in returned_dpath
+        expected_path = os.path.join(homedir, '.config', NSPACE4)
+    assert expected_path in returned_dpath
