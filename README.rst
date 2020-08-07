@@ -38,7 +38,7 @@ Features
 
 * Supported formats: JSON, YAML.
 * Pure python.
-* Supports Python 3.5+.
+* Supports Python 3.6+ (3.5 up to version ``v0.0.26``).
 * Supported and `fully tested on Linux, OS X and Windows <https://codecov.io/github/shaypal5/birch>`_.
 * `XDG Base Directory Specification <https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>`_ support.
 
