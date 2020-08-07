@@ -65,6 +65,15 @@ class Birch(collections.abc.Mapping):
         at the start of every get() or __getitem__() call (also when using the
         obj[key] syntax). This ensures every configuration value retrieved is
         up-to-date to all configuration sources (both files and env variables).
+    defaults : dict of str to object, optional
+        A dictionary of default value to any number of keys or nested keys.
+        Nested keys canbe given as either __-separated key sequences or nested
+        dict objects. For example, {'ZUBAT__SERVER__PORT': 8888} will set the
+        int 8888 as the default value for birch_obj['server']['port'].
+        {'server__port': 8888} will do the same, as will {'server': {'port':
+        8888}}. Notice that arguments provided to the `default` keyword of
+        the `get` method will override these constructor-provided defaults. See
+        the "Resolution order" in the ``README.rst`` file for more details.
     """
 
     class _NoVal(object):
@@ -93,7 +102,7 @@ class Birch(collections.abc.Mapping):
         pass
 
     def __init__(self, namespace, directories=None, supported_formats=None,
-                 load_all=False, auto_reload=False):
+                 load_all=False, auto_reload=False, defaults=None):
         self._xdg_cfg_dpath = _xdg_cfg_dpath(namespace=namespace)
         if directories is None:
             directories = [
@@ -119,6 +128,7 @@ class Birch(collections.abc.Mapping):
         self.load_all = load_all
         self._auto_reload = auto_reload
         self._no_val = Birch._NoVal()
+        self._defaults = defaults
         self._val_dict = self._build_val_dict()
 
     def xdg_cfg_dpath(self):
@@ -192,8 +202,29 @@ class Birch(collections.abc.Mapping):
         val_dict = Birch._hierarchical_dict_from_dict(val_dict)
         return val_dict
 
+    def _build_defaults_dict(self, defaults):
+        val_dict = CaseInsensitiveDict()
+        for key, value in defaults.items():
+            new_key = key
+            try:
+                new_key = new_key.upper()
+            except AttributeError:
+                raise ValueError((
+                    "Birch does not support non-string keys! "
+                    "{} provided as key!".format(key)
+                ))
+            if new_key[:self._root_len2] == self._root2:
+                new_key = new_key[self._root_len2:]
+            elif new_key[:self._root_len1] == self._root1:
+                new_key = new_key[self._root_len1:]
+            val_dict[new_key] = value
+        val_dict = Birch._hierarchical_dict_from_dict(val_dict)
+        return val_dict
+
     def _build_val_dict(self):
         val_dict = CaseInsensitiveDict()
+        if self._defaults is not None:
+            val_dict = self._build_defaults_dict(self._defaults)
         for path in self._cfg_fpaths():
             if os.path.isfile(path):
                 val_dict.update(**self._read_cfg_file(path))
@@ -208,7 +239,10 @@ class Birch(collections.abc.Mapping):
         try:
             key = key.upper()
         except AttributeError:
-            raise ValueError("Birch does not support non-string keys!")
+            raise ValueError((
+                "Birch does not support non-string keys! "
+                "{} provided as key!".format(key)
+            ))
         if self._auto_reload:
             self.reload()
         if self._root2 in key:
