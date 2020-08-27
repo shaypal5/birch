@@ -34,7 +34,7 @@ def _xdg_cfg_dpath(namespace):
             os.environ[XDG_CONFIG_HOME_VARNAME],
             namespace,
         )
-    return os.path.join(
+    return os.path.join(  # pragma: no cover
         os.path.expanduser('~'),
         '.config',
         namespace,
@@ -367,3 +367,26 @@ class Birch(collections.abc.Mapping):
     def __iter__(self):
         for keytupl, value in key_tuple_value_nested_generator(self._val_dict):
             yield SEP.join(keytupl), value
+
+    def cfg_key_to_env_var(self, key):
+        """Returns the environment variable corresponding to a given key.
+
+        Parmeters
+        ---------
+        key : str
+            The configuration key to get the environment variable for.
+
+        Returns
+        -------
+        env_var : str
+            The name of environment variable corresponding to the given
+            configuration key.
+
+        Example
+        -------
+        >>> import os;
+        >>> zubat_cfg = Birch('zubat')
+        >>> zubat_cfg.cfg_key_to_env_var('host')
+        'ZUBAT__HOST'
+        """
+        return '{}__{}'.format(self._upper_namespace, key.upper())
