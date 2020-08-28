@@ -410,3 +410,15 @@ def test_xdg_cfg_dpath():
         homedir = os.path.expanduser('~')
         expected_path = os.path.join(homedir, '.config', NSPACE4)
     assert expected_path in returned_dpath
+
+
+def test_xdg_cache_dpath():
+    cfg = Birch(NSPACE4)
+    returned_dpath = cfg.xdg_cache_dpath()
+    try:
+        xdg_cache_home = os.environ['XDG_CACHE_HOME']
+        expected_path = os.path.join(xdg_cache_home, NSPACE4)
+    except KeyError:
+        homedir = os.path.expanduser('~')
+        expected_path = os.path.join(homedir, '.cache', NSPACE4)
+    assert expected_path in returned_dpath

@@ -227,6 +227,13 @@ You can set automatic configuration reload on every value inspection by setting 
   'New.value!'
 
 
+Convenience methods
+-------------------
+
+The ``xdg_config_dpath()`` and ``xdg_cache_dpath()`` methods are provided to enable easy access to where the XDG-compliant configuration and cache directories for this namespace should reside.
+
+For example, if the ``XDG_CONFIG_HOME`` variable is set to ``/Users/daria/myconfig/`` then ``zubat_cfg.xdg_cfg_dpath()`` will return ``/Users/daria/myconfig/zubat/``, while if it is not set, the same method will return ``/Users/daria/.config/zubat/``.
+
 
 Configuring birch
 =================

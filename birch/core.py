@@ -14,31 +14,14 @@ from strct.dicts import (
 )
 
 from .exceptions import UnsupporedFormatException
+from .paths import (
+    _xdg_cfg_dpath,
+    _xdg_cache_dpath,
+    _legacy_cfg_dpath,
+)
+
 
 SEP = '__'
-
-
-def _legacy_cfg_dpath(namespace):
-    return os.path.join(
-        os.path.expanduser('~'),
-        '.{}'.format(namespace),
-    )
-
-
-XDG_CONFIG_HOME_VARNAME = 'XDG_CONFIG_HOME'
-
-
-def _xdg_cfg_dpath(namespace):
-    if XDG_CONFIG_HOME_VARNAME in os.environ:  # pragma: no cover
-        return os.path.join(
-            os.environ[XDG_CONFIG_HOME_VARNAME],
-            namespace,
-        )
-    return os.path.join(  # pragma: no cover
-        os.path.expanduser('~'),
-        '.config',
-        namespace,
-    )
 
 
 class Birch(collections.abc.Mapping):
@@ -140,6 +123,16 @@ class Birch(collections.abc.Mapping):
         `<home_dir>/.config/<namespace>/`.
         """
         return self._xdg_cfg_dpath
+
+    def xdg_cache_dpath(self):
+        """Returns the XDG-compliant cache home for this namespace.
+
+        If the ``XDG_CONFIG_HOME`` environmet variable is set to some path
+        `<xdg_cfg_home>`, this will return the path
+        `<xdg_cfg_home>/<namespace>/`. Otherwise, this will return the path
+        `<home_dir>/.config/<namespace>/`.
+        """
+        return _xdg_cache_dpath(namespace=self.namespace)
 
     def reload(self):
         """Reloads configuration values from all sources."""
