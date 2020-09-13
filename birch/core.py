@@ -130,7 +130,7 @@ class Birch(collections.abc.Mapping):
         If the ``XDG_CONFIG_HOME`` environmet variable is set to some path
         `<xdg_cfg_home>`, this will return the path
         `<xdg_cfg_home>/<namespace>/`. Otherwise, this will return the path
-        `<home_dir>/.config/<namespace>/`.
+        `<home_dir>/.cache/<namespace>/`.
         """
         return _xdg_cache_dpath(namespace=self.namespace)
 
