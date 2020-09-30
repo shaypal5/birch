@@ -383,3 +383,27 @@ class Birch(collections.abc.Mapping):
         'ZUBAT__HOST'
         """
         return '{}__{}'.format(self._upper_namespace, key.upper())
+
+    # === util static methods
+
+    @staticmethod
+    def xdg_cfg_dpath_by_namespace(namespace):
+        """Returns the XDG-compliant configuration home for a given namespace.
+
+        If the ``XDG_CONFIG_HOME`` environmet variable is set to some path
+        `<xdg_cfg_home>`, this will return the path
+        `<xdg_cfg_home>/<namespace>/`. Otherwise, this will return the path
+        `<home_dir>/.config/<namespace>/`.
+        """
+        return _xdg_cfg_dpath(namespace=namespace)
+
+    @staticmethod
+    def xdg_cache_dpath_by_namespace(namespace):
+        """Returns the XDG-compliant cache home for a givennamespace.
+
+        If the ``XDG_CONFIG_HOME`` environmet variable is set to some path
+        `<xdg_cfg_home>`, this will return the path
+        `<xdg_cfg_home>/<namespace>/`. Otherwise, this will return the path
+        `<home_dir>/.cache/<namespace>/`.
+        """
+        return _xdg_cache_dpath(namespace=namespace)

@@ -410,6 +410,7 @@ def test_xdg_cfg_dpath():
         homedir = os.path.expanduser('~')
         expected_path = os.path.join(homedir, '.config', NSPACE4)
     assert expected_path in returned_dpath
+    assert expected_path in Birch.xdg_cfg_dpath_by_namespace(NSPACE4)
 
 
 def test_xdg_cache_dpath():
@@ -422,3 +423,4 @@ def test_xdg_cache_dpath():
         homedir = os.path.expanduser('~')
         expected_path = os.path.join(homedir, '.cache', NSPACE4)
     assert expected_path in returned_dpath
+    assert expected_path in Birch.xdg_cache_dpath_by_namespace(NSPACE4)
