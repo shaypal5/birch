@@ -47,6 +47,9 @@ VAL_DICT2 = {
 NSPACE4 = 'ricketyporpoise'
 VAL_DICT4 = {
     'pik': 'puk',
+    'biil': 'True',
+    'bool': 'False',
+    'baal': 500,
     'shik': {
         'shuk': '8',
     }

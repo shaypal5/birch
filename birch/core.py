@@ -49,14 +49,24 @@ class Birch(collections.abc.Mapping):
         obj[key] syntax). This ensures every configuration value retrieved is
         up-to-date to all configuration sources (both files and env variables).
     defaults : dict of str to object, optional
-        A dictionary of default value to any number of keys or nested keys.
-        Nested keys canbe given as either __-separated key sequences or nested
+        A dictionary of default values for any number of keys or nested keys.
+        Nested keys can be given as either __-separated key sequences or nested
         dict objects. For example, {'ZUBAT__SERVER__PORT': 8888} will set the
         int 8888 as the default value for birch_obj['server']['port'].
         {'server__port': 8888} will do the same, as will {'server': {'port':
         8888}}. Notice that arguments provided to the `default` keyword of
         the `get` method will override these constructor-provided defaults. See
         the "Resolution order" in the ``README.rst`` file for more details.
+    default_casters : dict of str to callable, optional
+        A dictionary of default caster callables for any number of keys or
+        nested keys. Nested keys can be given as either __-separated key
+        sequences or nested dict objects. For example,
+        {'ZUBAT__SERVER__PORT': int} will set the int callable as the default
+        caster for birch_obj['server']['port']. {'server__port': int} will do
+        the same, as will {'server': {'port': 8888}}. Notice that arguments
+        provided to the `caster` keyword of the `get` method will NOT override
+        these constructor-provided defaults. Instead, per-call caster functions
+        will be applied AFTER any default caster configured.
     """
 
     class _NoVal(object):
@@ -84,8 +94,10 @@ class Birch(collections.abc.Mapping):
     except ImportError:  # pragma: no cover
         pass
 
-    def __init__(self, namespace, directories=None, supported_formats=None,
-                 load_all=False, auto_reload=False, defaults=None):
+    def __init__(
+        self, namespace, directories=None, supported_formats=None,
+        load_all=False, auto_reload=False, defaults=None, default_casters=None,
+    ):
         self._xdg_cfg_dpath = _xdg_cfg_dpath(namespace=namespace)
         if directories is None:
             directories = [
@@ -112,6 +124,10 @@ class Birch(collections.abc.Mapping):
         self._auto_reload = auto_reload
         self._no_val = Birch._NoVal()
         self._defaults = defaults
+        if default_casters:
+            self._default_casters = self._build_defaults_dict(default_casters)
+        else:
+            self._default_casters = None
         self._val_dict = self._build_val_dict()
 
     def xdg_cfg_dpath(self):
@@ -227,8 +243,7 @@ class Birch(collections.abc.Mapping):
         val_dict = Birch._hierarchical_dict_from_dict(val_dict)
         return val_dict
 
-    # implementing a collections.abc.Mapping abstract method
-    def __getitem__(self, key):
+    def _getitem_helper(self, key, dict_obj):
         try:
             key = key.upper()
         except AttributeError:
@@ -236,8 +251,6 @@ class Birch(collections.abc.Mapping):
                 "Birch does not support non-string keys! "
                 "{} provided as key!".format(key)
             ))
-        if self._auto_reload:
-            self.reload()
         if self._root2 in key:
             key = key[self._root_len2:]
         elif self._root1 in key:
@@ -247,16 +260,35 @@ class Birch(collections.abc.Mapping):
         else:
             key_tuple = [key]
         try:
-            res = self._val_dict[key]
+            res = dict_obj[key]
         except KeyError:
-            res = safe_nested_val(key_tuple, self._val_dict, self._no_val)
+            res = safe_nested_val(key_tuple, dict_obj, self._no_val)
         if res == self._no_val:
             raise KeyError("{}: No configuration value for {}.".format(
                 self.namespace, key))
         return res
 
+    # implementing a collections.abc.Mapping abstract method
+    def __getitem__(self, key):
+        if self._auto_reload:
+            self.reload()
+        val = self._getitem_helper(key, self._val_dict)
+        try:
+            def_caster = self._getitem_helper(key, self._default_casters)
+        except (KeyError, TypeError):
+            return val
+        try:
+            return def_caster(val)
+        except ValueError:
+            raise ValueError(
+                f"{self.namespace}: Bad configuration value {val} failed "
+                f"to be casted with default caster {def_caster}."
+            )
+        except TypeError:
+            return val
+
     def mget(self, key, caster=None):
-        """Return the value for key if it's in the configuration..
+        """Return the value for key if it's in the configuration.
 
         Parameters
         ----------
@@ -264,7 +296,9 @@ class Birch(collections.abc.Mapping):
             The key of the value to get.
         caster : callable, optional
             If given, any found value is passed through the caster before
-            returning.
+            returning. If a default caster was already configured for this,
+            then it will be applied first, and this caster callable will be
+            applied to the casted result of the default caster.
 
         Returns
         -------
@@ -281,15 +315,17 @@ class Birch(collections.abc.Mapping):
         >>> zubat_cfg.mget('mport', int)
         Traceback (most recent call last):
           ...
-        ValueError: zubat: Wrong configuration value Banana casted with <class 'int'>
+        ValueError: zubat: Bad configuration value Banana failed to be casted with caster <class 'int'>.
         """  # noqa: E501
         if caster:
             try:
-                return caster(self[key])
+                val = self[key]
+                return caster(val)
             except ValueError:
                 raise ValueError(
-                    "{}: Wrong configuration value {} casted with {}".format(
-                        self.namespace, self[key], caster))
+                    f"{self.namespace}: Bad configuration value {val} failed "
+                    f"to be casted with caster {caster}."
+                )
         return self[key]
 
     def get(self, key, default=None, caster=None, throw=False, warn=False):
@@ -307,7 +343,9 @@ class Birch(collections.abc.Mapping):
             defaults to None, so that this method never raised a KeyError.
         caster : callable, optional
             If given, any found value is passed through the caster before
-            returning.
+            returning. If a default caster was already configured for this,
+            then it will be applied first, and this caster callable will be
+            applied to the casted result of the default caster.
         throw : bool, default False
             If set to True, a KeyError is raised if no matching key is found
             AND the default value provided is None (which is the default).
