@@ -3,6 +3,7 @@
 import os
 import re
 import json
+import pprint
 import warnings
 import collections
 
@@ -398,6 +399,16 @@ class Birch(collections.abc.Mapping):
     def __iter__(self):
         for keytupl, value in key_tuple_value_nested_generator(self._val_dict):
             yield SEP.join(keytupl), value
+
+    def as_str(self):
+        """Returns a string representation of the configuration values dict.
+
+        Returns
+        -------
+        repr : str
+            A string representation of the configuration values dict.
+        """
+        return pprint.pformat(self._val_dict, indent=2)
 
     def cfg_key_to_env_var(self, key):
         """Returns the environment variable corresponding to a given key.

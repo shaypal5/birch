@@ -178,6 +178,7 @@ def test_json():
     assert len(cfg) == 17
     for name, value in cfg:
         assert isinstance(name, str)
+    assert isinstance(cfg.as_str(), str)
 
 
 def test_yaml():
