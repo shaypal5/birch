@@ -49,6 +49,7 @@ VAL_DICT4 = {
     'pik': 'puk',
     'biil': 'True',
     'bool': 'False',
+    'boolan': True,
     'baal': 500,
     'shik': {
         'shuk': '8',

@@ -17,6 +17,7 @@ def test_default_casters():
             'biil': true_false_caster,
             'bool': true_false_caster,
             'baal': true_false_caster,
+            'boolan': true_false_caster,
             'shik': {
                 'shuk': int,
             }
@@ -30,6 +31,9 @@ def test_default_casters():
     val = cfg['bool']
     assert isinstance(val, bool)
     assert val is False
+    val = cfg['boolan']
+    assert isinstance(val, bool)
+    assert val is True
     with pytest.raises(ValueError):
         val = cfg['baal']
     val = cfg['shik__shuk']
