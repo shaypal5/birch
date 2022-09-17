@@ -10,11 +10,12 @@ import versioneer
 INSTALL_REQUIRES = ['strct>=0.0.26']
 TEST_REQUIRES = [
     # testing and coverage
-    'pytest', 'coverage', 'pytest-cov',
+    'pytest', 'coverage', 'pytest-cov', 'pandas',
     # unmandatory dependencies of the package itself
-    'pyyaml',
+    'pyyaml', 'requests',
     # to be able to run `python setup.py checkdocs`
     'collective.checkdocs', 'pygments',
+    'scipy',
 ]
 
 with open('README.rst', encoding="utf-8") as f:
