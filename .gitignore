@@ -105,3 +105,5 @@ tags
 # pipfiles
 Pipfile
 Pipfile.lock
+
+.DS_Store
